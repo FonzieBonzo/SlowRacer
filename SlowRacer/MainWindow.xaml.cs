@@ -49,6 +49,7 @@ namespace SlowRacer
                 car.SetDirection(ActivTrack.StartDirectionccw);
                 car.X = ActivTrack.StartXccw;
                 car.Y = ActivTrack.StartYccw;
+                car.Direction = ActivTrack.StartDirectionccw;
 
                 car.Width = carImage.Width;
                 car.Height = carImage.Height;
@@ -137,41 +138,68 @@ namespace SlowRacer
 
                 foreach (var car in cars)
                 {
-                    var StepX = car.DirectionX * car.Speed * elapsed.TotalSeconds;
-                    var StepY = car.DirectionY * car.Speed * elapsed.TotalSeconds;
+                    //var StepX = car.DirectionX * car.Speed * elapsed.TotalSeconds;
+                    //var StepY = car.DirectionY * car.Speed * elapsed.TotalSeconds;
 
-                    var NewX = car.X + car.DirectionX * 60 * elapsed.TotalSeconds;
-                    var NewY = car.Y + car.DirectionY * 60 * elapsed.TotalSeconds;
+                    // var NewX = car.X + car.DirectionX * 60 * elapsed.TotalSeconds;
+                    // var NewY = car.Y + car.DirectionY * 60 * elapsed.TotalSeconds;
                     //ActivTrack.track
-                   // var RGB = ActivTrack.GetRGB((int)NewX, (int)NewY);
+                    // var RGB = ActivTrack.GetRGB((int)NewX, (int)NewY);
+                    car.NextStep +=  car.Speed * elapsed.TotalSeconds;
+
+                    if ((int)car.NextStep < 1) continue;
 
 
+                    int orgDirection = car.Direction;
+                    bool success= false;
 
-                    List<Point> outlinePoints = GetCircleOutlinePoints((int)NewX, (int)NewY, 2);
+                    int step = 1;
+                    int loopcount = 0;
 
-
-                    foreach (var outlinePoint in outlinePoints)
+                    while (!success)
                     {
+                        loopcount = loopcount + 1;
+                        var tryNewXY = ActivTrack.GetRGB((int)(car.X + car.DirectionX), (int)(car.Y + car.DirectionY));
 
-                        var RGB = ActivTrack.GetRGB((int)outlinePoint.X, (int)outlinePoint.Y);
-
-                        if (RGB.green>0 || RGB.blue>0)
+                        tbXY.Text = "X" + ((int)(car.X + car.DirectionX)).ToString() + "  Y" + ((int)(car.Y + car.DirectionY)).ToString();
+                        if  (tryNewXY.red > 0 ||tryNewXY.green>0 || tryNewXY.blue>0)
                         {
-
-                            car.X = outlinePoint.X;
-                            car.Y = outlinePoint.Y;
-                            continue;
+                            car.X = car.X + car.DirectionX;
+                            car.Y = car.Y + car.DirectionY;
+                            success = true;
+                            car.NextStep = car.NextStep - 1;
+                            break;
                         }
 
+                        if (loopcount>=3)
+                        {
+                            loopcount = 0;
+                            step = -1;
+                            car.Direction = orgDirection;
+                        }
+
+                        car.Direction = car.Direction + step;
+                        if (car.Direction > 7) car.Direction = 0;
+                        if (car.Direction < 0) car.Direction = 7;
+                        car.SetDirection(car.Direction);    
+
+
                     }
+
+
+
+
+                    // List<Point> outlinePoints = GetCircleOutlinePoints((int)NewX, (int)NewY, 2);
+
+
 
                     if (!canvas.Children.Contains(car.UIElement))
                     {
                         canvas.Children.Add(car.UIElement);
                     }
 
-                    Canvas.SetLeft(car.UIElement, car.X);
-                    Canvas.SetTop(car.UIElement, car.Y);
+                    Canvas.SetLeft(car.UIElement,(int) (car.X-( car.Width/2)));
+                    Canvas.SetTop(car.UIElement, (int)(car.Y -( car.Height/ 2)));
                 }
 
                 /*foreach (var car in cars)

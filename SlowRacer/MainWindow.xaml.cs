@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.ConstrainedExecution;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -52,6 +53,8 @@ namespace SlowRacer
                 car.Width = carImage.Width;
                 car.Height = carImage.Height;
 
+                car.Speed = random.Next(10, 100);
+
                 cars.Add(car);
                 // canvas.Children.Add(car.UIElement);
             }
@@ -97,43 +100,56 @@ namespace SlowRacer
             {
                 lastRenderTime = DateTime.Now;
 
-                //foreach (var car in cars)
-                //{
-                //    var NewX = car.X + car.DirectionX * 60 * elapsed.TotalSeconds;
-                //    var NewY = car.Y + car.DirectionY * 60 * elapsed.TotalSeconds;
-                //    //ActivTrack.track
-                //    //var color = HandyTools.GetPixelColor(ActivTrack.track,(int)NewX,(int)NewY);
-
-                //    //// Get the RGB values from the Color object
-                //    //byte red = color.R;
-                //    //byte green = color.G;
-                //    //byte blue = color.B;
-
-                //    Canvas.SetLeft(car.UIElement, car.X);
-                //    Canvas.SetTop(car.UIElement, car.Y);
-                //}
-
-                foreach (var sprite in cars)
+                /*foreach (var car in cars)
                 {
-                    sprite.X += sprite.DirectionX * 60 * elapsed.TotalSeconds;
-                    sprite.Y += sprite.DirectionY * 60 * elapsed.TotalSeconds;
+                    var StepX = car.DirectionX * car.Speed * elapsed.TotalSeconds;
+                    var StepY = car.DirectionY * car.Speed * elapsed.TotalSeconds;
 
-                    // Check if the sprite has gone off the edge of the canvas
-                    if (sprite.X > canvas.Width - sprite.Width || sprite.X < 0 || sprite.Y > canvas.Height - sprite.Height || sprite.Y < 0)
+
+
+                    var NewX = car.X + car.DirectionX * 60 * elapsed.TotalSeconds;
+                    var NewY = car.Y + car.DirectionY * 60 * elapsed.TotalSeconds;
+                    //ActivTrack.track
+                    //var color = HandyTools.GetPixelColor(ActivTrack.track,(int)NewX,(int)NewY);
+
+                    //// Get the RGB values from the Color object
+                    //byte red = color.R;
+                    //byte green = color.G;
+                    //byte blue = color.B;
+
+                    Canvas.SetLeft(car.UIElement, car.X);
+                    Canvas.SetTop(car.UIElement, car.Y);
+                }*/
+
+                foreach (var car in cars)
+                {
+                    var StepX = car.DirectionX * car.Speed * elapsed.TotalSeconds;
+                    var StepY = car.DirectionY * car.Speed * elapsed.TotalSeconds;
+
+                   
+
+
+                    car.X += StepX;
+                    car.Y += StepY;
+
+                    // Check if the car has gone off the edge of the canvas
+                    if (car.X > canvas.Width - car.Width || car.X < 0 || car.Y > canvas.Height - car.Height || car.Y < 0)
                     {
-                        sprite.X = 800;
-                        sprite.Y = 300;
-                        sprite.SetDirection(random.Next(0, 8));
+                        car.X = 800;
+                        car.Y = 300;
+                        car.SetDirection(random.Next(0, 8));
                     }
 
-                    // Set the position of the sprite
-                    Canvas.SetLeft(sprite.UIElement, sprite.X);
-                    Canvas.SetTop(sprite.UIElement, sprite.Y);
+                   
 
-                    // Add the sprite to the canvas if it's not already there
-                    if (!canvas.Children.Contains(sprite.UIElement))
+                    // Set the position of the car
+                    Canvas.SetLeft(car.UIElement, car.X);
+                    Canvas.SetTop(car.UIElement, car.Y);
+
+                    // Add the car to the canvas if it's not already there
+                    if (!canvas.Children.Contains(car.UIElement))
                     {
-                        canvas.Children.Add(sprite.UIElement);
+                        canvas.Children.Add(car.UIElement);
                     }
                 }
                 lastRenderTime = DateTime.Now;

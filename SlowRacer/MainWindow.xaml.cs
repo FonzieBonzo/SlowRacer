@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static System.Net.Mime.MediaTypeNames;
 using Image = System.Windows.Controls.Image;
 
 namespace SlowRacer
@@ -91,6 +92,41 @@ namespace SlowRacer
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarscw", "StartFinish", "10");
         }
 
+        public List<Point> GetCircleOutlinePoints(int center_x, int center_y, int radius)
+        {
+            List<Point> outlinePoints = new List<Point>();
+            int x = radius;
+            int y = 0;
+            int decisionOver2 = 1 - x;
+
+            while (y <= x)
+            {
+                outlinePoints.Add(new Point(x + center_x, y + center_y));
+                outlinePoints.Add(new Point(y + center_x, x + center_y));
+                outlinePoints.Add(new Point(-x + center_x, y + center_y));
+                outlinePoints.Add(new Point(-y + center_x, x + center_y));
+                outlinePoints.Add(new Point(-x + center_x, -y + center_y));
+                outlinePoints.Add(new Point(-y + center_x, -x + center_y));
+                outlinePoints.Add(new Point(x + center_x, -y + center_y));
+                outlinePoints.Add(new Point(y + center_x, -x + center_y));
+
+                y++;
+
+                if (decisionOver2 <= 0)
+                {
+                    decisionOver2 += 2 * y + 1;
+                }
+                else
+                {
+                    x--;
+                    decisionOver2 += 2 * (y - x) + 1;
+                }
+            }
+
+            return outlinePoints;
+        }
+
+
         private void CompositionTarget_Rendering(object? sender, EventArgs e)
         {
             TimeSpan elapsed = DateTime.Now - lastRenderTime;
@@ -107,9 +143,32 @@ namespace SlowRacer
                     var NewX = car.X + car.DirectionX * 60 * elapsed.TotalSeconds;
                     var NewY = car.Y + car.DirectionY * 60 * elapsed.TotalSeconds;
                     //ActivTrack.track
-                    var RGB = ActivTrack.GetRGB((int)NewX, (int)NewY);
+                   // var RGB = ActivTrack.GetRGB((int)NewX, (int)NewY);
 
 
+
+                    List<Point> outlinePoints = GetCircleOutlinePoints((int)NewX, (int)NewY, 2);
+
+
+                    foreach (var outlinePoint in outlinePoints)
+                    {
+
+                        var RGB = ActivTrack.GetRGB((int)outlinePoint.X, (int)outlinePoint.Y);
+
+                        if (RGB.green>0 || RGB.blue>0)
+                        {
+
+                            car.X = outlinePoint.X;
+                            car.Y = outlinePoint.Y;
+                            continue;
+                        }
+
+                    }
+
+                    if (!canvas.Children.Contains(car.UIElement))
+                    {
+                        canvas.Children.Add(car.UIElement);
+                    }
 
                     Canvas.SetLeft(car.UIElement, car.X);
                     Canvas.SetTop(car.UIElement, car.Y);

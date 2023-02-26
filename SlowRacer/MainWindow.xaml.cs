@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using static System.Net.Mime.MediaTypeNames;
 using Image = System.Windows.Controls.Image;
 
 namespace SlowRacer
@@ -22,14 +21,12 @@ namespace SlowRacer
         private DateTime lastfpsTime;
         private DateTime lastRenderTime = DateTime.Now;
         private int frameCount;
+        private bool bezig=false;
 
         public MainWindow()
         {
             InitializeComponent();
         }
-
-
-
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -59,12 +56,11 @@ namespace SlowRacer
                 car.Width = carImage.Width;
                 car.Height = carImage.Height;
 
-                car.Speed = random.Next(10, 100);
+                car.Speed = random.Next(10, 60);
 
                 cars.Add(car);
                 // canvas.Children.Add(car.UIElement);
             }
-
 
             for (int i = 0; i < ActivTrack.AICarscw; i++)
             {
@@ -82,12 +78,11 @@ namespace SlowRacer
                 car.Width = carImage.Width;
                 car.Height = carImage.Height;
 
-                car.Speed = random.Next(10, 100);
+                car.Speed = random.Next(10, 60);
 
                 cars.Add(car);
                 // canvas.Children.Add(car.UIElement);
             }
-
 
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
@@ -122,43 +117,14 @@ namespace SlowRacer
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarscw", "StartFinish", "10");
         }
 
-        public List<Point> GetCircleOutlinePoints(int center_x, int center_y, int radius)
-        {
-            List<Point> outlinePoints = new List<Point>();
-            int x = radius;
-            int y = 0;
-            int decisionOver2 = 1 - x;
-
-            while (y <= x)
-            {
-                outlinePoints.Add(new Point(x + center_x, y + center_y));
-                outlinePoints.Add(new Point(y + center_x, x + center_y));
-                outlinePoints.Add(new Point(-x + center_x, y + center_y));
-                outlinePoints.Add(new Point(-y + center_x, x + center_y));
-                outlinePoints.Add(new Point(-x + center_x, -y + center_y));
-                outlinePoints.Add(new Point(-y + center_x, -x + center_y));
-                outlinePoints.Add(new Point(x + center_x, -y + center_y));
-                outlinePoints.Add(new Point(y + center_x, -x + center_y));
-
-                y++;
-
-                if (decisionOver2 <= 0)
-                {
-                    decisionOver2 += 2 * y + 1;
-                }
-                else
-                {
-                    x--;
-                    decisionOver2 += 2 * (y - x) + 1;
-                }
-            }
-
-            return outlinePoints;
-        }
-
+        
 
         private void CompositionTarget_Rendering(object? sender, EventArgs e)
         {
+            if (bezig) return;
+            bezig = true;
+            
+            
             TimeSpan elapsed = DateTime.Now - lastRenderTime;
 
             if (elapsed.Milliseconds >= -10)
@@ -167,40 +133,43 @@ namespace SlowRacer
 
                 foreach (var car in cars)
                 {
-                    //var StepX = car.DirectionX * car.Speed * elapsed.TotalSeconds;
-                    //var StepY = car.DirectionY * car.Speed * elapsed.TotalSeconds;
-
-                    // var NewX = car.X + car.DirectionX * 60 * elapsed.TotalSeconds;
-                    // var NewY = car.Y + car.DirectionY * 60 * elapsed.TotalSeconds;
-                    //ActivTrack.track
-                    // var RGB = ActivTrack.GetRGB((int)NewX, (int)NewY);
-                    car.NextStep +=  car.Speed * elapsed.TotalSeconds;
+                   
+                    car.NextStep += car.Speed * elapsed.TotalSeconds;
 
                     if ((int)car.NextStep < 1) continue;
 
-
                     int orgDirection = car.Direction;
-                    bool success= false;
+                    bool success = false;
 
                     int step = 1;
                     int loopcount = 0;
 
-                    while (!success)
+                    while (car.NextStep>1)
                     {
                         loopcount = loopcount + 1;
                         var tryNewXY = ActivTrack.GetRGB((int)(car.X + car.DirectionX), (int)(car.Y + car.DirectionY));
 
                         tbXY.Text = "X" + ((int)(car.X + car.DirectionX)).ToString() + "  Y" + ((int)(car.Y + car.DirectionY)).ToString();
-                        if  (tryNewXY.red > 0 ||tryNewXY.green>0 || tryNewXY.blue>0)
+                        if (tryNewXY.red > 0 || tryNewXY.green > 0 || tryNewXY.blue > 0)
                         {
                             car.X = car.X + car.DirectionX;
                             car.Y = car.Y + car.DirectionY;
                             success = true;
-                            car.NextStep = car.NextStep - 1;
-                            break;
+                            car.NextStep = car.NextStep - .3;
+                            step = 1;
+                            loopcount = 0;
+
+
+                            if (random.Next(0, 100) == 1) { 
+
+                                car.Speed = random.Next(10, 100);
+                               }
+
+                            orgDirection = car.Direction;
+                            continue;
                         }
 
-                        if (loopcount>=3)
+                        if (loopcount >= 3)
                         {
                             loopcount = 0;
                             step = -1;
@@ -210,54 +179,23 @@ namespace SlowRacer
                         car.Direction = car.Direction + step;
                         if (car.Direction > 7) car.Direction = 0;
                         if (car.Direction < 0) car.Direction = 7;
-                        car.SetDirection(car.Direction);    
-
-
+                        car.SetDirection(car.Direction);
                     }
-
-
-
 
                     // List<Point> outlinePoints = GetCircleOutlinePoints((int)NewX, (int)NewY, 2);
 
-
-
                     if (!canvas.Children.Contains(car.UIElement))
                     {
                         canvas.Children.Add(car.UIElement);
                     }
 
-                    Canvas.SetLeft(car.UIElement,(int) (car.X-( car.Width/2)));
-                    Canvas.SetTop(car.UIElement, (int)(car.Y -( car.Height/ 2)));
+                    Canvas.SetLeft(car.UIElement, (int)(car.X - (car.Width / 2)));
+                    Canvas.SetTop(car.UIElement, (int)(car.Y - (car.Height / 2)));
                 }
 
-                /*foreach (var car in cars)
-                {
-                    var StepX = car.DirectionX * car.Speed * elapsed.TotalSeconds;
-                    var StepY = car.DirectionY * car.Speed * elapsed.TotalSeconds;
-
-                    car.X += StepX;
-                    car.Y += StepY;
-
-                    // Check if the car has gone off the edge of the canvas
-                    if (car.X > canvas.Width - car.Width || car.X < 0 || car.Y > canvas.Height - car.Height || car.Y < 0)
-                    {
-                        car.X = 800;
-                        car.Y = 300;
-                        car.SetDirection(random.Next(0, 8));
-                    }
-
-                    // Set the position of the car
-                    Canvas.SetLeft(car.UIElement, car.X);
-                    Canvas.SetTop(car.UIElement, car.Y);
-
-                    // Add the car to the canvas if it's not already there
-                    if (!canvas.Children.Contains(car.UIElement))
-                    {
-                        canvas.Children.Add(car.UIElement);
-                    }
-                }*/
+              
                 lastRenderTime = DateTime.Now;
+                bezig = false;
             }
 
             // Update the FPS counter and display it on the screen

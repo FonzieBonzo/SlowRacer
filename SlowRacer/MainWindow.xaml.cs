@@ -34,9 +34,9 @@ namespace SlowRacer
             ActivTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack");
 
             TrackImage.Source = ActivTrack.background;
-            this.SizeToContent = SizeToContent.Manual;
+            /*this.SizeToContent = SizeToContent.Manual;
             this.Width = this.Width + 60;
-            this.Height = this.Height + 25;
+            this.Height = this.Height + 25;*/
 
             for (int i = 0; i < ActivTrack.AICarsccw; i++)
             {

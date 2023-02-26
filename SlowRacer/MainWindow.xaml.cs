@@ -28,12 +28,17 @@ namespace SlowRacer
             InitializeComponent();
         }
 
+
+
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (!Directory.Exists(HandyTools.AppSavePath)) CreateAppSavePathWithDefaults();
             ActivTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack");
 
             TrackImage.Source = ActivTrack.background;
+            TrackImage.Width = ActivTrack.background.PixelWidth;
+            TrackImage.Height = ActivTrack.background.PixelHeight;
             /*this.SizeToContent = SizeToContent.Manual;
             this.Width = this.Width + 60;
             this.Height = this.Height + 25;*/

@@ -25,7 +25,7 @@
             <TextBlock Name="tbXY" >fps</TextBlock>
         </StackPanel>
             <Canvas x:Name="canvas" Grid.Column="2" Grid.Row="2" Width="1600" Height="640">
-            <Image x:Name="TrackImage" Width="1600" Height="640" Stretch="UniformToFill" />
+            <Image x:Name="TrackImage"  />
             </Canvas>
         </Grid>    
 </Window>

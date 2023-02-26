@@ -21,7 +21,7 @@ namespace SlowRacer
         private DateTime lastfpsTime;
         private DateTime lastRenderTime = DateTime.Now;
         private int frameCount;
-        private bool bezig=false;
+       
 
         public MainWindow()
         {
@@ -36,10 +36,7 @@ namespace SlowRacer
             TrackImage.Source = ActivTrack.background;
             TrackImage.Width = ActivTrack.background.PixelWidth;
             TrackImage.Height = ActivTrack.background.PixelHeight;
-            /*this.SizeToContent = SizeToContent.Manual;
-            this.Width = this.Width + 60;
-            this.Height = this.Height + 25;*/
-
+            
             for (int i = 0; i < ActivTrack.AICarsccw; i++)
             {
                 // var car = new cCar();
@@ -117,14 +114,9 @@ namespace SlowRacer
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarscw", "StartFinish", "10");
         }
 
-        
-
         private void CompositionTarget_Rendering(object? sender, EventArgs e)
-        {
-            if (bezig) return;
-            bezig = true;
-            
-            
+        {         
+
             TimeSpan elapsed = DateTime.Now - lastRenderTime;
 
             if (elapsed.Milliseconds >= -10)
@@ -133,18 +125,17 @@ namespace SlowRacer
 
                 foreach (var car in cars)
                 {
-                   
                     car.NextStep += car.Speed * elapsed.TotalSeconds;
 
                     if ((int)car.NextStep < 1) continue;
 
                     int orgDirection = car.Direction;
-                    bool success = false;
+                    
 
                     int step = 1;
                     int loopcount = 0;
 
-                    while (car.NextStep>1)
+                    while (car.NextStep > 1)
                     {
                         loopcount = loopcount + 1;
                         var tryNewXY = ActivTrack.GetRGB((int)(car.X + car.DirectionX), (int)(car.Y + car.DirectionY));
@@ -154,16 +145,19 @@ namespace SlowRacer
                         {
                             car.X = car.X + car.DirectionX;
                             car.Y = car.Y + car.DirectionY;
-                            success = true;
+                            
                             car.NextStep = car.NextStep - .3;
                             step = 1;
                             loopcount = 0;
 
+                            if (random.Next(0, 100) == 1)
+                            {
+                                
+                                car.Speed = car.Speed+random.Next(-20, 20);
+                                if (car.Speed < 20) car.Speed = 20;
+                                if (car.Speed >150) car.Speed = 150;
 
-                            if (random.Next(0, 100) == 1) { 
-
-                                car.Speed = random.Next(10, 100);
-                               }
+                            }
 
                             orgDirection = car.Direction;
                             continue;
@@ -193,9 +187,8 @@ namespace SlowRacer
                     Canvas.SetTop(car.UIElement, (int)(car.Y - (car.Height / 2)));
                 }
 
-              
                 lastRenderTime = DateTime.Now;
-                bezig = false;
+              
             }
 
             // Update the FPS counter and display it on the screen

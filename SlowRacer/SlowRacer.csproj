@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Images\AppIcons\Graphicloads-Transport-Car-4.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\DefaultTrack\background.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\AppIcons\Graphicloads-Transport-Car-4.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\DefaultTrack\background.png" />
+  </ItemGroup>
+
+</Project>

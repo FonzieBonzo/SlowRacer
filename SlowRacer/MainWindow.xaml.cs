@@ -60,6 +60,30 @@ namespace SlowRacer
                 // canvas.Children.Add(car.UIElement);
             }
 
+
+            for (int i = 0; i < ActivTrack.AICarscw; i++)
+            {
+                // var car = new cCar();
+                var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png", UriKind.Absolute));
+                var image = new Image();
+                image.Source = carImage;
+
+                cCar car = new cCar(image);
+                car.SetDirection(ActivTrack.StartDirectioncw);
+                car.X = ActivTrack.StartXcw;
+                car.Y = ActivTrack.StartYcw;
+                car.Direction = ActivTrack.StartDirectioncw;
+
+                car.Width = carImage.Width;
+                car.Height = carImage.Height;
+
+                car.Speed = random.Next(10, 100);
+
+                cars.Add(car);
+                // canvas.Children.Add(car.UIElement);
+            }
+
+
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
 

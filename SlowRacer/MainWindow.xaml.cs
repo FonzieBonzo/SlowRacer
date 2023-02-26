@@ -151,12 +151,10 @@ namespace SlowRacer
                             loopcount = 0;
 
                             if (random.Next(0, 100) == 1)
-                            {
-                                
+                            {                                
                                 car.Speed = car.Speed+random.Next(-20, 20);
                                 if (car.Speed < 20) car.Speed = 20;
                                 if (car.Speed >150) car.Speed = 150;
-
                             }
 
                             orgDirection = car.Direction;

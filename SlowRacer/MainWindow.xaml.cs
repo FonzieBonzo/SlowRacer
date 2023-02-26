@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.ConstrainedExecution;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -100,34 +99,26 @@ namespace SlowRacer
             {
                 lastRenderTime = DateTime.Now;
 
-                /*foreach (var car in cars)
-                {
-                    var StepX = car.DirectionX * car.Speed * elapsed.TotalSeconds;
-                    var StepY = car.DirectionY * car.Speed * elapsed.TotalSeconds;
-
-
-
-                    var NewX = car.X + car.DirectionX * 60 * elapsed.TotalSeconds;
-                    var NewY = car.Y + car.DirectionY * 60 * elapsed.TotalSeconds;
-                    //ActivTrack.track
-                    //var color = HandyTools.GetPixelColor(ActivTrack.track,(int)NewX,(int)NewY);
-
-                    //// Get the RGB values from the Color object
-                    //byte red = color.R;
-                    //byte green = color.G;
-                    //byte blue = color.B;
-
-                    Canvas.SetLeft(car.UIElement, car.X);
-                    Canvas.SetTop(car.UIElement, car.Y);
-                }*/
-
                 foreach (var car in cars)
                 {
                     var StepX = car.DirectionX * car.Speed * elapsed.TotalSeconds;
                     var StepY = car.DirectionY * car.Speed * elapsed.TotalSeconds;
 
-                   
+                    var NewX = car.X + car.DirectionX * 60 * elapsed.TotalSeconds;
+                    var NewY = car.Y + car.DirectionY * 60 * elapsed.TotalSeconds;
+                    //ActivTrack.track
+                    var RGB = ActivTrack.GetRGB((int)NewX, (int)NewY);
 
+
+
+                    Canvas.SetLeft(car.UIElement, car.X);
+                    Canvas.SetTop(car.UIElement, car.Y);
+                }
+
+                /*foreach (var car in cars)
+                {
+                    var StepX = car.DirectionX * car.Speed * elapsed.TotalSeconds;
+                    var StepY = car.DirectionY * car.Speed * elapsed.TotalSeconds;
 
                     car.X += StepX;
                     car.Y += StepY;
@@ -140,8 +131,6 @@ namespace SlowRacer
                         car.SetDirection(random.Next(0, 8));
                     }
 
-                   
-
                     // Set the position of the car
                     Canvas.SetLeft(car.UIElement, car.X);
                     Canvas.SetTop(car.UIElement, car.Y);
@@ -151,7 +140,7 @@ namespace SlowRacer
                     {
                         canvas.Children.Add(car.UIElement);
                     }
-                }
+                }*/
                 lastRenderTime = DateTime.Now;
             }
 

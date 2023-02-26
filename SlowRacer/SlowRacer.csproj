@@ -10,6 +10,9 @@
 
   <ItemGroup>
     <None Remove="Images\DefaultTrack\background.png" />
+    <None Remove="Images\DefaultTrack\car.png" />
+    <None Remove="Images\DefaultTrack\track.png" />
+    <None Remove="Images\DefaultTrack\track1600x640.pdn" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +25,9 @@
 
   <ItemGroup>
     <Resource Include="Images\DefaultTrack\background.png" />
+    <Resource Include="Images\DefaultTrack\car.png" />
+    <Resource Include="Images\DefaultTrack\track.png" />
+    <Resource Include="Images\DefaultTrack\track1600x640.pdn" />
   </ItemGroup>
 
 </Project>

@@ -179,6 +179,8 @@ namespace SlowRacer.Common
             track.AICarsccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarsccw", "StartFinish"));
             track.AICarscw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarscw", "StartFinish"));
 
+            track.Laps = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "DefaultLaps", "StartFinish"));
+
             track.StartXccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartXccw", "StartFinish"));
             track.StartXcw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartXcw", "StartFinish"));
 
@@ -188,28 +190,31 @@ namespace SlowRacer.Common
             track.StartDirectionccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectionccw", "StartFinish"));
             track.StartDirectioncw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectioncw", "StartFinish"));
 
+            track.MaxSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MaxSpeed", "Cars" ));
+            track.MinSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MinSpeed" ,"Cars"));
+
             return track;
         }
 
-        internal static cCar IsInCollitionWith(cCar car, List<cCar> cars)
+        internal static cCar IsInCollitionWith(cCar car, Dictionary<Guid, cCar> cars)
         {
+        
 
 
-
-            foreach (var carItem in cars)
+            foreach (var carItem in cars.Values)
             {
 
                 double distance = 0;
 
                 distance = Math.Abs(carItem.X - car.X) + Math.Abs(carItem.Y - car.Y);
-                if (distance <= car.Width+4 && car.Id!=carItem.Id) 
+                if (distance <= car.Width+4 && car.Uid!=carItem.Uid) 
                 
                 {
-                    if (car.Direction==6 && car.X> carItem.X) return carItem;
-                    if (car.Direction == 2 && car.X < carItem.X) return carItem;
+                    if ((car.Direction==6  || car.Direction == 5 || car.Direction == 7) && car.X> carItem.X) return carItem;
+                    if ((car.Direction == 2 || car.Direction == 1 || car.Direction == 3) && car.X < carItem.X) return carItem;
 
-                    if (car.Direction == 0 && car.Y > carItem.Y) return carItem;
-                    if (car.Direction == 4 && car.Y < carItem.Y) return carItem;
+                    if ((car.Direction == 0 || car.Direction == 7 || car.Direction == 1) && car.Y > carItem.Y) return carItem;
+                    if ((car.Direction == 4 || car.Direction == 5 || car.Direction == 3) && car.Y < carItem.Y) return carItem;
 
                 }
 

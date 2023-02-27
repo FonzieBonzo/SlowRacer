@@ -7,9 +7,8 @@ using System.Xml.Linq;
 
 namespace SlowRacer.Common
 {
-    internal class cSettings
+    public class cSettings
     {
-
-       
+        public System.Guid UidYou { get; set; }
     }
 }

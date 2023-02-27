@@ -20,7 +20,10 @@ namespace SlowRacer.Common
         }
 
 
-        
+        public int MaxSpeed { get; set; }
+        public int MinSpeed { get; set; }
+
+        public int Laps { get; set; }
 
 
         public byte[][]? RGBtrackArray { get; set; }

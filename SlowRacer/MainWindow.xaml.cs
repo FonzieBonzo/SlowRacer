@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.ConstrainedExecution;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,11 +19,16 @@ namespace SlowRacer
     public partial class MainWindow : Window
     {
         private Random random = new Random(DateTime.Now.Millisecond);
-        private List<cCar> cars = new List<cCar>();
-        private cTrack ActivTrack = new cTrack();
+        private Dictionary<System.Guid,cCar> cars = new Dictionary<System.Guid, cCar>();
+        private cTrack ActiveTrack = new cTrack();
         private DateTime lastfpsTime;
         private DateTime lastRenderTime = DateTime.Now;
         private int frameCount;
+
+        private DateTime dtKeyW, dtKeyA, dtKeyS,dtKeyD;    
+
+        public cSettings Settings=new cSettings();  
+
 
         public MainWindow()
         {
@@ -32,13 +38,13 @@ namespace SlowRacer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (!Directory.Exists(HandyTools.AppSavePath)) CreateAppSavePathWithDefaults();
-            ActivTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack");
+            ActiveTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack");
 
-            TrackImage.Source = ActivTrack.background;
-            TrackImage.Width = ActivTrack.background.PixelWidth;
-            TrackImage.Height = ActivTrack.background.PixelHeight;
+            TrackImage.Source = ActiveTrack.background;
+            TrackImage.Width = ActiveTrack.background.PixelWidth;
+            TrackImage.Height = ActiveTrack.background.PixelHeight;
             bool FirstCar = true;
-            for (int i = 0; i < ActivTrack.AICarsccw; i++)
+            for (int i = 0; i < ActiveTrack.AICarsccw; i++)
             {
                 // var car = new cCar();
                 var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png", UriKind.Absolute));
@@ -49,33 +55,46 @@ namespace SlowRacer
                 if (FirstCar)
                 {
                     newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Color.FromRgb(200, 0, 0));
+                    
                 }
                 else
                 {
                     newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Color.FromRgb(200, 200, 0));
                 }
-                FirstCar = false;
+                
                 //carImage =
                 var image = new Image();
                 image.Source = newCarImage;
 
                 cCar car = new cCar(image);
-                car.Dir = TypeDir.ccw;
-                car.SetDirection(ActivTrack.StartDirectionccw);
-                car.X = ActivTrack.StartXccw;
-                car.Y = ActivTrack.StartYccw;
-                car.Direction = ActivTrack.StartDirectionccw;
+                if (FirstCar)
+                {
+                    Settings.UidYou = car.Uid;
+                    car.typeDriver = TypeDriver.you;
+                }
+                else
+                {
+                    car.typeDriver = TypeDriver.ai;
+                }
+                car.typeDir = TypeDir.ccw;
+                car.SetDirection(ActiveTrack.StartDirectionccw);
+                car.X = ActiveTrack.StartXccw;
+                car.Y = ActiveTrack.StartYccw;
+                car.Direction = ActiveTrack.StartDirectionccw;
 
                 car.Width = carImage.Width;
                 car.Height = carImage.Height;
 
-                car.Speed = random.Next(40, 60);
+                car.Speed = random.Next(ActiveTrack.MinSpeed, ActiveTrack.MaxSpeed+1);
 
-                cars.Add(car);
+                
+
+                cars.Add(car.Uid, car);
                 // canvas.Children.Add(car.UIElement);
+                FirstCar = false;
             }
 
-            for (int i = 0; i < ActivTrack.AICarscw; i++)
+            for (int i = 0; i < ActiveTrack.AICarscw; i++)
             {
                 // var car = new cCar();
                 var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png", UriKind.Absolute));
@@ -89,18 +108,18 @@ namespace SlowRacer
                 image.Source = newCarImage;
 
                 cCar car = new cCar(image);
-                car.Dir = TypeDir.cw;
-                car.SetDirection(ActivTrack.StartDirectioncw);
-                car.X = ActivTrack.StartXcw;
-                car.Y = ActivTrack.StartYcw;
-                car.Direction = ActivTrack.StartDirectioncw;
+                car.typeDir = TypeDir.cw;
+                car.SetDirection(ActiveTrack.StartDirectioncw);
+                car.X = ActiveTrack.StartXcw;
+                car.Y = ActiveTrack.StartYcw;
+                car.Direction = ActiveTrack.StartDirectioncw;
 
                 car.Width = carImage.Width;
                 car.Height = carImage.Height;
 
-                car.Speed = random.Next(50, 60);
+                car.Speed = random.Next(ActiveTrack.MinSpeed, ActiveTrack.MaxSpeed + 1);
 
-                cars.Add(car);
+                cars.Add(car.Uid, car);
                 // canvas.Children.Add(car.UIElement);
             }
             CompositionTarget.Rendering += CompositionTarget_Rendering;
@@ -126,6 +145,8 @@ namespace SlowRacer
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartXcw", "StartFinish", "1424");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartYcw", "StartFinish", "431");
 
+            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "DefaultLaps", "StartFinish", "5");
+
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartXccw", "StartFinish", "1459");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartYccw", "StartFinish", "447");
 
@@ -134,6 +155,9 @@ namespace SlowRacer
 
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarsccw", "StartFinish", "15");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarscw", "StartFinish", "10");
+
+            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MaxSpeed", "Cars", "100");
+            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MinSpeed", "Cars", "10");
         }
 
         private void CompositionTarget_Rendering(object? sender, EventArgs e)
@@ -146,7 +170,7 @@ namespace SlowRacer
 
             bool FirstCar = true;
 
-            foreach (var car in cars)
+            foreach (var car in cars.Values)
             {
                 car.NextStep += car.Speed * elapsed.TotalSeconds;
 
@@ -160,17 +184,17 @@ namespace SlowRacer
                 while (car.NextStep > 1)
                 {
                     loopcount = loopcount + 1;
-                    var tryNewXY = ActivTrack.GetRGB((int)(car.X + car.DirectionX), (int)(car.Y + car.DirectionY));
+                    var tryNewXY = ActiveTrack.GetRGB((int)(car.X + car.DirectionX), (int)(car.Y + car.DirectionY));
 
                     // tbXY.Text = "X" + ((int)(car.X + car.DirectionX)).ToString() + "  Y" + ((int)(car.Y + car.DirectionY)).ToString();
                     if (tryNewXY.red > 0 || tryNewXY.green > 0 || tryNewXY.blue > 0)
                     {
                         cCar InCollCar = HandyTools.IsInCollitionWith(car, cars);
 
-                        if (InCollCar != null && car.Dir == InCollCar.Dir)
+                        if (InCollCar != null && car.typeDir == InCollCar.typeDir)
                         {
-                            car.Speed = InCollCar.Speed - 5;
-                            if (car.Speed < 10) car.Speed = 10;
+                            if (car.Speed > InCollCar.Speed)  car.Speed = InCollCar.Speed - 10;
+                            if (car.Speed < ActiveTrack.MinSpeed) car.Speed = ActiveTrack.MinSpeed; 
                         }
 
                         int OldX = (int)car.X;
@@ -181,10 +205,10 @@ namespace SlowRacer
 
                         if (OldX != (int)car.X && OldY != (int)car.Y)
                         {
-                            if (car.LapCounted == false && Math.Abs(car.X - ActivTrack.StartXccw) <= 1 && Math.Abs(car.Y - ActivTrack.StartYccw) <= 1)
+                            if (car.LapCounted == false && Math.Abs(car.X - ActiveTrack.StartXccw) <= 1 && Math.Abs(car.Y - ActiveTrack.StartYccw) <= 1)
 
                             {
-                                car.Laps = car.Laps + 1;
+                                car.Lap = car.Lap + 1;
                                 car.LapCounted = true;
                             }
                             else
@@ -197,11 +221,11 @@ namespace SlowRacer
                         step = 1;
                         loopcount = 0;
 
-                        if (random.Next(0, 50) == 1)
+                        if (car.typeDriver==TypeDriver.ai &&  random.Next(0, 50) == 1)
                         {
                             car.Speed = car.Speed + random.Next(-20, 20);
-                            if (car.Speed < 20) car.Speed = 20;
-                            if (car.Speed > 150) car.Speed = 150;
+                            if (car.Speed < ActiveTrack.MinSpeed) car.Speed = ActiveTrack.MinSpeed;
+                            if (car.Speed > ActiveTrack.MaxSpeed) car.Speed = ActiveTrack.MaxSpeed;                          
                         }
                         orgDirection = car.Direction;
                         continue;
@@ -229,7 +253,7 @@ namespace SlowRacer
 
                 if (FirstCar == true)
                 {
-                    TB.Text = "LAPS " + car.Laps.ToString();
+                    TB.Text = "lap:" + car.Lap.ToString()+"/"+ActiveTrack.Laps.ToString();
                 }
                 FirstCar = false;
 
@@ -253,14 +277,22 @@ namespace SlowRacer
         private void CheckKeys()
         {
             string keys = "";
-            if (Keyboard.IsKeyDown(Key.W)) keys = keys + " W";
-            if (Keyboard.IsKeyDown(Key.S)) keys = keys + " S";
+            if (DateTime.Now.Ticks - dtKeyW.Ticks>4000000 &&  Keyboard.IsKeyDown(Key.W))
+            {
+                keys = keys + " W";
+                dtKeyW = DateTime.Now;
+                if (HandyTools.IsInCollitionWith(cars[Settings.UidYou], cars)==null && cars.ContainsKey(Settings.UidYou) && cars[Settings.UidYou].Speed< (ActiveTrack.MaxSpeed-10))    cars[Settings.UidYou].Speed += 10;
+
+            }
+            if (DateTime.Now.Ticks - dtKeyS.Ticks > 4000000 && Keyboard.IsKeyDown(Key.S))
+            {
+                dtKeyS = DateTime.Now;
+                keys = keys + " S";
+                if (cars.ContainsKey(Settings.UidYou) && cars[Settings.UidYou].Speed > (ActiveTrack.MinSpeed + 10)) cars[Settings.UidYou].Speed -= 10;
+            }
             if (Keyboard.IsKeyDown(Key.A)) keys = keys + " A";
             if (Keyboard.IsKeyDown(Key.D)) keys = keys + " D";
-
-
-
-            TB2.Text = keys;
+            TB2.Text = keys + " speed:"+ cars[Settings.UidYou].Speed.ToString();
         }
 
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)

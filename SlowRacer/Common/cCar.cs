@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -6,6 +7,10 @@ namespace SlowRacer.Common
 {
     internal class cCar
     {
+        public Guid Id { get; private set; }
+
+       
+
         public double X { get; set; }
         public double Y { get; set; }
 
@@ -75,6 +80,7 @@ namespace SlowRacer.Common
             Width = image.Width;
             Height = image.Height;
             UIElement = image;
+             Id = Guid.NewGuid();
         }
     }
 }

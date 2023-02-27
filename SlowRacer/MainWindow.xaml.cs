@@ -170,8 +170,25 @@ namespace SlowRacer
                             if (car.Speed < 10) car.Speed = 10;
                         }
 
+                        int OldX = (int)car.X;
+                        int OldY = (int)car.Y;
+
                         car.X = car.X + car.DirectionX;
                         car.Y = car.Y + car.DirectionY;
+
+                        if (OldX != (int)car.X && OldY != (int)car.Y)
+                        {
+                            if (car.LapCounted == false && Math.Abs(car.X - ActivTrack.StartXccw) <= 1 && Math.Abs(car.Y - ActivTrack.StartYccw) <= 1)
+
+                            {
+                                car.Laps = car.Laps + 1;
+                                car.LapCounted = true;
+                            }
+                            else
+                            {
+                                car.LapCounted = false;
+                            }
+                        }
 
                         car.NextStep = car.NextStep - .3;
                         step = 1;
@@ -206,8 +223,6 @@ namespace SlowRacer
                 {
                     canvas.Children.Add(car.UIElement);
                 }
-
-                if (Math.Abs(car.X - ActivTrack.StartXccw) <= 1 && Math.Abs(car.Y - ActivTrack.StartYccw) <= 1) car.Laps = car.Laps + 1;
 
                 if (FirstCar == true)
                 {

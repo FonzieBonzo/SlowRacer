@@ -17,7 +17,9 @@ namespace SlowRacer.Common
         public Guid Id { get; private set; }
 
 
-        public int Laps { get;  set; }
+        public int Laps { get; set; } = 0;
+
+        public bool LapCounted { get; set; } = true;  
 
         public double X { get; set; }
         public double Y { get; set; }

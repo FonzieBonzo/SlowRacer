@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SlowRacer"
         mc:Ignorable="d"
-        Title="SlowRacer"   MinHeight="340" MinWidth="1200" SizeToContent="WidthAndHeight" Loaded="Window_Loaded" >
+        Title="SlowRacer"   MinHeight="340" MinWidth="1200" SizeToContent="WidthAndHeight" Loaded="Window_Loaded" KeyDown="Window_KeyDown" >
     <Grid>    
        
             <Grid.ColumnDefinitions>
@@ -24,6 +24,7 @@
             <TextBlock Padding="5" Name="fpsTextBlock" >fps</TextBlock>
 
             <TextBlock Padding="5" Name="TB" >Laps </TextBlock>
+            <TextBlock Padding="5" Name="TB2" ></TextBlock>
 
         </StackPanel>
             <Canvas x:Name="canvas" Grid.Column="2" Grid.Row="2" Width="1600" Height="640">

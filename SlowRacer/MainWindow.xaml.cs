@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static SlowRacer.Common.cCar;
@@ -139,7 +140,9 @@ namespace SlowRacer
         {
             TimeSpan elapsed = DateTime.Now - lastRenderTime;
 
-            lastRenderTime = DateTime.Now;
+            CheckKeys();
+
+           lastRenderTime = DateTime.Now;
 
             bool FirstCar = true;
 
@@ -245,6 +248,24 @@ namespace SlowRacer
                 frameCount = 0;
                 lastfpsTime = DateTime.Now;
             }
+        }
+
+        private void CheckKeys()
+        {
+            string keys = "";
+            if (Keyboard.IsKeyDown(Key.W)) keys = keys + " W";
+            if (Keyboard.IsKeyDown(Key.S)) keys = keys + " S";
+            if (Keyboard.IsKeyDown(Key.A)) keys = keys + " A";
+            if (Keyboard.IsKeyDown(Key.D)) keys = keys + " D";
+
+
+
+            TB2.Text = keys;
+        }
+
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            
         }
     }
 }

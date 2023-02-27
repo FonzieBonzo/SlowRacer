@@ -7,13 +7,20 @@ namespace SlowRacer.Common
 {
     internal class cCar
     {
+        public enum TypeDir
+        {
+            cw, ccw
+        }
+
+        public TypeDir Dir { get; set; }
+
         public Guid Id { get; private set; }
 
-       
+
+        public int Laps { get;  set; }
 
         public double X { get; set; }
         public double Y { get; set; }
-
 
         public void SetDirection(int direction)
         {
@@ -23,34 +30,42 @@ namespace SlowRacer.Common
                     DirectionX = 0;
                     DirectionY = -1;
                     break;
+
                 case 1:
                     DirectionX = 1;
                     DirectionY = -1;
                     break;
+
                 case 2:
                     DirectionX = 1;
                     DirectionY = 0;
                     break;
+
                 case 3:
                     DirectionX = 1;
                     DirectionY = 1;
                     break;
+
                 case 4:
                     DirectionX = 0;
                     DirectionY = 1;
                     break;
+
                 case 5:
                     DirectionX = -1;
                     DirectionY = 1;
                     break;
+
                 case 6:
                     DirectionX = -1;
                     DirectionY = 0;
                     break;
+
                 case 7:
                     DirectionX = -1;
                     DirectionY = -1;
                     break;
+
                 default:
                     break;
             }
@@ -58,14 +73,14 @@ namespace SlowRacer.Common
 
         public bool OncomingTraffic { get; set; }
 
-        public int Direction { get;  set; }
+        public int Direction { get; set; }
 
         public double DirectionX { get; private set; }
         public double DirectionY { get; private set; }
 
         public int Speed { get; set; }
 
-        public double NextStep { get; set; } =0;
+        public double NextStep { get; set; } = 0;
 
         public double Width { get; set; }
         public double Height { get; set; }
@@ -74,13 +89,14 @@ namespace SlowRacer.Common
 
         public cCar(Image image)
         {
-
             //Width = image.ActualWidth;
             // Height = image.ActualHeight;
             Width = image.Width;
             Height = image.Height;
             UIElement = image;
-             Id = Guid.NewGuid();
+            Id = Guid.NewGuid();
+
+            
         }
     }
 }

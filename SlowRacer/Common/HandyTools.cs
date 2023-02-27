@@ -209,7 +209,7 @@ namespace SlowRacer.Common
                     if (car.Direction == 2 && car.X < carItem.X) return carItem;
 
                     if (car.Direction == 0 && car.Y > carItem.Y) return carItem;
-                    if (car.Direction == 4 && car.Y < carItem.X) return carItem;
+                    if (car.Direction == 4 && car.Y < carItem.Y) return carItem;
 
                 }
 

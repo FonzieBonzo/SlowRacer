@@ -22,7 +22,9 @@
             </Grid.RowDefinitions>
             <StackPanel  Grid.Column="2" Grid.Row="1" Orientation="Horizontal">
             <TextBlock Padding="5" Name="fpsTextBlock" >fps</TextBlock>
-            <TextBlock Padding="5" Name="tbXY" >fps</TextBlock>
+
+            <TextBlock Padding="5" Name="TB" >Laps </TextBlock>
+
         </StackPanel>
             <Canvas x:Name="canvas" Grid.Column="2" Grid.Row="2" Width="1600" Height="640">
             <Image x:Name="TrackImage"  />

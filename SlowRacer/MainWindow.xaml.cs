@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static SlowRacer.Common.cCar;
 using Image = System.Windows.Controls.Image;
 
 namespace SlowRacer
@@ -35,21 +36,30 @@ namespace SlowRacer
             TrackImage.Source = ActivTrack.background;
             TrackImage.Width = ActivTrack.background.PixelWidth;
             TrackImage.Height = ActivTrack.background.PixelHeight;
-
+            bool FirstCar = true;
             for (int i = 0; i < ActivTrack.AICarsccw; i++)
             {
                 // var car = new cCar();
                 var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png", UriKind.Absolute));
 
                 WriteableBitmap newBitmap = new WriteableBitmap(carImage);
+                WriteableBitmap newCarImage;
 
-                WriteableBitmap newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Color.FromRgb(200, 200, 0));
-
+                if (FirstCar)
+                {
+                    newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Color.FromRgb(200, 0, 0));
+                }
+                else
+                {
+                    newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Color.FromRgb(200, 200, 0));
+                }
+                FirstCar = false;
                 //carImage =
                 var image = new Image();
                 image.Source = newCarImage;
 
                 cCar car = new cCar(image);
+                car.Dir = TypeDir.ccw;
                 car.SetDirection(ActivTrack.StartDirectionccw);
                 car.X = ActivTrack.StartXccw;
                 car.Y = ActivTrack.StartYccw;
@@ -58,7 +68,7 @@ namespace SlowRacer
                 car.Width = carImage.Width;
                 car.Height = carImage.Height;
 
-                car.Speed = random.Next(10, 60);
+                car.Speed = random.Next(40, 60);
 
                 cars.Add(car);
                 // canvas.Children.Add(car.UIElement);
@@ -78,6 +88,7 @@ namespace SlowRacer
                 image.Source = newCarImage;
 
                 cCar car = new cCar(image);
+                car.Dir = TypeDir.cw;
                 car.SetDirection(ActivTrack.StartDirectioncw);
                 car.X = ActivTrack.StartXcw;
                 car.Y = ActivTrack.StartYcw;
@@ -86,7 +97,7 @@ namespace SlowRacer
                 car.Width = carImage.Width;
                 car.Height = carImage.Height;
 
-                car.Speed = random.Next(10, 60);
+                car.Speed = random.Next(50, 60);
 
                 cars.Add(car);
                 // canvas.Children.Add(car.UIElement);
@@ -128,78 +139,87 @@ namespace SlowRacer
         {
             TimeSpan elapsed = DateTime.Now - lastRenderTime;
 
-            if (elapsed.Milliseconds >= -10)
+            lastRenderTime = DateTime.Now;
+
+            bool FirstCar = true;
+
+            foreach (var car in cars)
             {
-                lastRenderTime = DateTime.Now;
+                car.NextStep += car.Speed * elapsed.TotalSeconds;
 
-                foreach (var car in cars)
+                if ((int)car.NextStep < 1) continue;
+
+                int orgDirection = car.Direction;
+
+                int step = 1;
+                int loopcount = 0;
+
+                while (car.NextStep > 1)
                 {
-                    car.NextStep += car.Speed * elapsed.TotalSeconds;
+                    loopcount = loopcount + 1;
+                    var tryNewXY = ActivTrack.GetRGB((int)(car.X + car.DirectionX), (int)(car.Y + car.DirectionY));
 
-                    if ((int)car.NextStep < 1) continue;
-
-                    int orgDirection = car.Direction;
-
-                    int step = 1;
-                    int loopcount = 0;
-
-                    while (car.NextStep > 1)
+                    // tbXY.Text = "X" + ((int)(car.X + car.DirectionX)).ToString() + "  Y" + ((int)(car.Y + car.DirectionY)).ToString();
+                    if (tryNewXY.red > 0 || tryNewXY.green > 0 || tryNewXY.blue > 0)
                     {
-                        loopcount = loopcount + 1;
-                        var tryNewXY = ActivTrack.GetRGB((int)(car.X + car.DirectionX), (int)(car.Y + car.DirectionY));
+                        cCar InCollCar = HandyTools.IsInCollitionWith(car, cars);
 
-                       // tbXY.Text = "X" + ((int)(car.X + car.DirectionX)).ToString() + "  Y" + ((int)(car.Y + car.DirectionY)).ToString();
-                        if (tryNewXY.red > 0 || tryNewXY.green > 0 || tryNewXY.blue > 0)
+                        if (InCollCar != null && car.Dir == InCollCar.Dir)
                         {
-                            cCar InCollCar = HandyTools.IsInCollitionWith(car, cars);
-
-                            if (InCollCar != null)
-                            {
-                                car.Speed = InCollCar.Speed - 5;
-                                if (car.Speed < 10) car.Speed = 10;
-                            }
-
-                            car.X = car.X + car.DirectionX;
-                            car.Y = car.Y + car.DirectionY;
-
-                            car.NextStep = car.NextStep - .3;
-                            step = 1;
-                            loopcount = 0;
-
-                            if (random.Next(0, 50) == 1)
-                            {
-                                car.Speed = car.Speed + random.Next(-20, 20);
-                                if (car.Speed < 20) car.Speed = 20;
-                                if (car.Speed > 150) car.Speed = 150;
-                            }
-                            orgDirection = car.Direction;
-                            continue;
+                            car.Speed = InCollCar.Speed - 5;
+                            if (car.Speed < 10) car.Speed = 10;
                         }
 
-                        if (loopcount >= 3)
+                        car.X = car.X + car.DirectionX;
+                        car.Y = car.Y + car.DirectionY;
+
+                        car.NextStep = car.NextStep - .3;
+                        step = 1;
+                        loopcount = 0;
+
+                        if (random.Next(0, 50) == 1)
                         {
-                            loopcount = 0;
-                            step = -1;
-                            car.Direction = orgDirection;
+                            car.Speed = car.Speed + random.Next(-20, 20);
+                            if (car.Speed < 20) car.Speed = 20;
+                            if (car.Speed > 150) car.Speed = 150;
                         }
-
-                        car.Direction = car.Direction + step;
-                        if (car.Direction > 7) car.Direction = 0;
-                        if (car.Direction < 0) car.Direction = 7;
-                        car.SetDirection(car.Direction);
-                    }                  
-
-                    if (!canvas.Children.Contains(car.UIElement))
-                    {
-                        canvas.Children.Add(car.UIElement);
+                        orgDirection = car.Direction;
+                        continue;
                     }
 
-                    Canvas.SetLeft(car.UIElement, (int)(car.X - (car.Width / 2)));
-                    Canvas.SetTop(car.UIElement, (int)(car.Y - (car.Height / 2)));
+                    if (loopcount >= 3)
+                    {
+                        loopcount = 0;
+                        step = -1;
+                        car.Direction = orgDirection;
+                    }
+
+                    car.Direction = car.Direction + step;
+                    if (car.Direction > 7) car.Direction = 0;
+                    if (car.Direction < 0) car.Direction = 7;
+                    car.SetDirection(car.Direction);
+
+                    FirstCar = false;
                 }
 
-                lastRenderTime = DateTime.Now;
+                if (!canvas.Children.Contains(car.UIElement))
+                {
+                    canvas.Children.Add(car.UIElement);
+                }
+
+                if (Math.Abs(car.X - ActivTrack.StartXccw) <= 1 && Math.Abs(car.Y - ActivTrack.StartYccw) <= 1) car.Laps = car.Laps + 1;
+
+                if (FirstCar == true)
+                {
+                    TB.Text = "LAPS " + car.Laps.ToString();
+                }
+                FirstCar = false;
+
+                Canvas.SetLeft(car.UIElement, (int)(car.X - (car.Width / 2)));
+                Canvas.SetTop(car.UIElement, (int)(car.Y - (car.Height / 2)));
             }
+
+            lastRenderTime = DateTime.Now;
 
             // Update the FPS counter and display it on the screen
             TimeSpan elapsed2 = DateTime.Now - lastfpsTime;

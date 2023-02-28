@@ -86,6 +86,8 @@ namespace SlowRacer.Common
 
         public int Direction { get; set; }
 
+        public DateTime dtPenalty { get; set; } = DateTime.Now.AddMinutes(-1);
+
         public double DirectionX { get; private set; }
         public double DirectionY { get; private set; }
 

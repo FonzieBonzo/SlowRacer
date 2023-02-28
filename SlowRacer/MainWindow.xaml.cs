@@ -153,8 +153,8 @@ namespace SlowRacer
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarsccw", "StartFinish", "15");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarscw", "StartFinish", "10");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MaxSpeed", "Cars", "100");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MinSpeed", "Cars", "10");
+            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MaxSpeed", "Cars", "60");
+            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MinSpeed", "Cars", "30");
         }
 
         private void CompositionTarget_Rendering(object? sender, EventArgs e)
@@ -193,9 +193,13 @@ namespace SlowRacer
 
         private cCar CalculateNextStep(cCar car, double elapsed, Dictionary<Guid, cCar> cars)
         {
+
+            if (DateTime.Now.Ticks - car.dtPenalty.Ticks < 6000000) return car;
             car.NextStep += car.Speed * (elapsed / 1000);
 
             if ((int)car.NextStep < 1) return car;
+
+            
 
             int orgDirection = car.Direction;
 
@@ -211,10 +215,15 @@ namespace SlowRacer
                 {
                     cCar InCollCar = HandyTools.IsInCollitionWith(car, cars);
 
-                    if (InCollCar != null && car.typeDir == InCollCar.typeDir)
+                    if (InCollCar != null )
                     {
+
                         if (car.Speed > InCollCar.Speed) car.Speed = InCollCar.Speed - 10;
                         if (car.Speed < ActiveTrack.MinSpeed) car.Speed = ActiveTrack.MinSpeed;
+                        if (car.DrivingOnWrongLanes) { car.dtPenalty = DateTime.Now; }
+                        
+
+
                     }
 
                     int OldX = (int)car.X;
@@ -289,14 +298,10 @@ namespace SlowRacer
                 if (DateTime.Now.Ticks - dtKeyS.Ticks > 4000000)
                 {
                     dtKeyS = DateTime.Now;
-
                     if (CarValues.Speed >= (ActiveTrack.MinSpeed + 10)) CarValues.Speed -= 10;
                 }
             }
-            else { dtKeyS = DateTime.Now.AddMinutes(-1); }
-
-            if (Keyboard.IsKeyDown(Key.A)) keys = keys + " A";
-            if (Keyboard.IsKeyDown(Key.D)) keys = keys + " D";
+            else { dtKeyS = DateTime.Now.AddMinutes(-1); }           
 
             if (Keyboard.IsKeyDown(Key.Space))
             {

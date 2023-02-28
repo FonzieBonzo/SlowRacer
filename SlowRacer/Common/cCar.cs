@@ -82,7 +82,7 @@ namespace SlowRacer.Common
             }
         }
 
-        public bool OnWrongLanes { get; set; } = false;
+        public bool DrivingOnWrongLanes { get; set; } = false;
 
         public int Direction { get; set; }
 

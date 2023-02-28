@@ -241,7 +241,7 @@ namespace SlowRacer.Common
             int X2 = (int)(carValues.X - dummyCar.DirectionX);
             int Y2 = (int)(carValues.Y - dummyCar.DirectionY);
 
-            bool found = false;
+            bool FoundOtherLanes = false;
 
             for (int i = 0; i < 150; i++)
             {
@@ -271,7 +271,7 @@ namespace SlowRacer.Common
                 if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
                 {
                     PosX = X1 + 1; PosY = Y1;
-                    found = true;
+                    FoundOtherLanes = true;
                     break;
                 }
 
@@ -279,7 +279,7 @@ namespace SlowRacer.Common
                 if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
                 {
                     PosX = X1 - 1; PosY = Y1;
-                    found = true;
+                    FoundOtherLanes = true;
                     break;
                 }
 
@@ -287,7 +287,7 @@ namespace SlowRacer.Common
                 if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
                 {
                     PosX = X1; PosY = Y1 + 1;
-                    found = true;
+                    FoundOtherLanes = true;
                     break;
                 }
 
@@ -295,7 +295,7 @@ namespace SlowRacer.Common
                 if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
                 {
                     PosX = X1; PosY = Y1 - 1;
-                    found = true;
+                    FoundOtherLanes = true;
                     break;
                 }
 
@@ -305,7 +305,7 @@ namespace SlowRacer.Common
                 if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
                 {
                     PosX = X2; PosY = Y2;
-                    found = true;
+                    FoundOtherLanes = true;
                     break;
                 }
 
@@ -313,7 +313,7 @@ namespace SlowRacer.Common
                 if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
                 {
                     PosX = X2 + 1; PosY = Y2;
-                    found = true;
+                    FoundOtherLanes = true;
                     break;
                 }
 
@@ -321,7 +321,7 @@ namespace SlowRacer.Common
                 if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
                 {
                     PosX = X2 - 1; PosY = Y2;
-                    found = true;
+                    FoundOtherLanes = true;
                     break;
                 }
 
@@ -329,7 +329,7 @@ namespace SlowRacer.Common
                 if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
                 {
                     PosX = X2 - 1; PosY = Y2 + 1;
-                    found = true;
+                    FoundOtherLanes = true;
                     break;
                 }
 
@@ -337,11 +337,11 @@ namespace SlowRacer.Common
                 if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
                 {
                     PosX = X2 - 1; PosY = Y2 - 1;
-                    found = true;
+                    FoundOtherLanes = true;
                     break;
                 }
             }
-            if (found)
+            if (FoundOtherLanes)
             {
                 double OrgPosX = carValues.X; double OrgPosY = carValues.Y;
                 carValues.X = PosX; carValues.Y = PosY;
@@ -350,7 +350,7 @@ namespace SlowRacer.Common
                     carValues.X = OrgPosX; carValues.Y = OrgPosY;
                 }
                 cTrack.cRGB GRB = activeTrack.GetRGB((int)carValues.X, (int)carValues.Y);
-                carValues.OnWrongLanes = (GRB.blue > 10) ? true : false;
+                carValues.DrivingOnWrongLanes = (GRB.blue > 10) ? true : false;
             }
             return carValues;
         }

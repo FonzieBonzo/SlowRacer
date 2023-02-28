@@ -45,7 +45,7 @@ namespace SlowRacer
 
             //generate counterclockwise AI cars
             for (int i = 0; i < ActiveTrack.AICarsccw; i++)
-            {              
+            {
                 var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png", UriKind.Absolute));
                 WriteableBitmap newBitmap = new WriteableBitmap(carImage);
                 WriteableBitmap newCarImage;
@@ -56,7 +56,7 @@ namespace SlowRacer
                 else
                 {
                     newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Color.FromRgb(200, 200, 0));
-                }                
+                }
                 var image = new Image();
                 image.Source = newCarImage;
                 cCar car = new cCar(image);
@@ -78,7 +78,7 @@ namespace SlowRacer
                 car.Direction = ActiveTrack.StartDirectionccw;
                 car.Width = carImage.Width;
                 car.Height = carImage.Height;
-                
+
                 cars.Add(car.Uid, car);
                 canvas.Children.Add(car.UIElement);
                 FirstCar = false;
@@ -162,14 +162,12 @@ namespace SlowRacer
             double elapsed = (DateTime.Now - lastRenderTime).TotalMilliseconds;
             lastRenderTime = DateTime.Now;
 
-            CheckKeys();            
+            CheckKeys();
 
             foreach (var car in cars.Values)
-            {               
-                
-                var NewCar=CalculateNextStep(car, elapsed,cars);
-                cars[NewCar.Uid] = NewCar;                
-                
+            {
+                var NewCar = CalculateNextStep(car, elapsed, cars);
+                cars[NewCar.Uid] = NewCar;
 
                 if (NewCar.typeDriver == TypeDriver.you)
                 {
@@ -195,7 +193,7 @@ namespace SlowRacer
 
         private cCar CalculateNextStep(cCar car, double elapsed, Dictionary<Guid, cCar> cars)
         {
-            car.NextStep += car.Speed * (elapsed/1000);
+            car.NextStep += car.Speed * (elapsed / 1000);
 
             if ((int)car.NextStep < 1) return car;
 
@@ -208,8 +206,8 @@ namespace SlowRacer
             {
                 loopcount = loopcount + 1;
                 var tryNewXY = ActiveTrack.GetRGB((int)(car.X + car.DirectionX), (int)(car.Y + car.DirectionY));
-               
-                if (tryNewXY.red > 0 || tryNewXY.green > 0 || tryNewXY.blue > 0)
+
+                if (tryNewXY.red > 50 || tryNewXY.green > 50 || tryNewXY.blue > 50)
                 {
                     cCar InCollCar = HandyTools.IsInCollitionWith(car, cars);
 
@@ -274,31 +272,44 @@ namespace SlowRacer
             var CarValues = cars[Settings.UidYou];
 
             string keys = "";
-            if (DateTime.Now.Ticks - dtKeyW.Ticks > 4000000 && Keyboard.IsKeyDown(Key.W))
+            if (Keyboard.IsKeyDown(Key.W))
             {
                 keys = keys + " W";
-                dtKeyW = DateTime.Now;
-                if (HandyTools.IsInCollitionWith(CarValues, cars) == null && CarValues.Speed <= (ActiveTrack.MaxSpeed - 10)) CarValues.Speed += 10;
+                if (DateTime.Now.Ticks - dtKeyW.Ticks > 4000000)
+                {
+                    dtKeyW = DateTime.Now;
+                    if (HandyTools.IsInCollitionWith(CarValues, cars) == null && CarValues.Speed <= (ActiveTrack.MaxSpeed - 10)) CarValues.Speed += 10;
+                }
             }
-            if (DateTime.Now.Ticks - dtKeyS.Ticks > 4000000 && Keyboard.IsKeyDown(Key.S))
+            else { dtKeyW = DateTime.Now.AddMinutes(-1); }
+
+            if (Keyboard.IsKeyDown(Key.S))
             {
-                dtKeyS = DateTime.Now;
                 keys = keys + " S";
-                if (CarValues.Speed >= (ActiveTrack.MinSpeed + 10)) CarValues.Speed -= 10;
+                if (DateTime.Now.Ticks - dtKeyS.Ticks > 4000000)
+                {
+                    dtKeyS = DateTime.Now;
+
+                    if (CarValues.Speed >= (ActiveTrack.MinSpeed + 10)) CarValues.Speed -= 10;
+                }
             }
+            else { dtKeyS = DateTime.Now.AddMinutes(-1); }
+
             if (Keyboard.IsKeyDown(Key.A)) keys = keys + " A";
             if (Keyboard.IsKeyDown(Key.D)) keys = keys + " D";
 
-            if (DateTime.Now.Ticks - dtKeySpace.Ticks > 4000000 && Keyboard.IsKeyDown(Key.Space))
+            if (Keyboard.IsKeyDown(Key.Space))
             {
                 keys = keys + " Space";
-                dtKeySpace = DateTime.Now;
-                CarValues = HandyTools.SwitchLanes(CarValues, ActiveTrack,cars);
+                if (DateTime.Now.Ticks - dtKeySpace.Ticks > 4000000)
+                {
+                    dtKeySpace = DateTime.Now;
+                    CarValues = HandyTools.SwitchLanes(CarValues, ActiveTrack, cars);
+                }
             }
+            else { dtKeySpace = DateTime.Now.AddMinutes(-1); }
             TB2.Text = keys + " speed:" + CarValues.Speed.ToString();
-            cars[Settings.UidYou]= CarValues;  
+            cars[Settings.UidYou] = CarValues;
         }
-
-       
     }
 }

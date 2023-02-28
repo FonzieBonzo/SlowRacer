@@ -29,33 +29,8 @@ namespace SlowRacer.Common
 
                 File.WriteAllBytes(filePath, buffer);
             }
-        }
-
-        /*internal static WriteableBitmap ReplaceColor2(BitmapImage bitmapImage, System.Windows.Media.Color color1, System.Windows.Media.Color color2)
-        {
-            WriteableBitmap writeableBitmap = new WriteableBitmap(bitmapImage);
-
-            // Copy pixel data to byte array
-            byte[] pixelData = new byte[writeableBitmap.PixelWidth * writeableBitmap.PixelHeight * 4];
-            writeableBitmap.CopyPixels(pixelData, writeableBitmap.PixelWidth * 4, 0);
-
-            // Rearrange pixel data to get RGB color array
-            byte[][] rgbColorArray = new byte[writeableBitmap.PixelHeight][];
-            for (int i = 0; i < writeableBitmap.PixelHeight; i++)
-            {
-                rgbColorArray[i] = new byte[writeableBitmap.PixelWidth * 3];
-                for (int j = 0; j < writeableBitmap.PixelWidth; j++)
-                {
-                    int offset = i * writeableBitmap.PixelWidth * 4 + j * 4;
-                    rgbColorArray[i][j * 3] = pixelData[offset + 2];   // Red
-                    rgbColorArray[i][j * 3 + 1] = pixelData[offset + 1]; // Green
-                    rgbColorArray[i][j * 3 + 2] = pixelData[offset];     // Blue
-                }
-            }
-            return writeableBitmap;
-        }*/
-
-        //internal static BitmapImage ReplaceColor(BitmapImage carImage, System.Windows.Media.Color color1, System.Windows.Media.Color color2)
+        }    
+       
 
         public static WriteableBitmap ReplaceColor(WriteableBitmap bitmap, System.Windows.Media.Color oldColor, System.Windows.Media.Color newColor)
         {
@@ -80,7 +55,6 @@ namespace SlowRacer.Common
                     pixels[i] = newColor.B;
                 }
             }
-
             // Copy the modified pixel data from the byte array into the new bitmap
             newBitmap.WritePixels(new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight), pixels, bitmap.PixelWidth * 4, 0);
 

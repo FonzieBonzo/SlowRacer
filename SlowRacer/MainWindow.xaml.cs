@@ -193,13 +193,10 @@ namespace SlowRacer
 
         private cCar CalculateNextStep(cCar car, double elapsed, Dictionary<Guid, cCar> cars)
         {
-
-            if (DateTime.Now.Ticks - car.dtPenalty.Ticks < 6000000) return car;
+            if (DateTime.Now.Ticks - car.dtPenalty.Ticks < 8000000) return car;
             car.NextStep += car.Speed * (elapsed / 1000);
 
             if ((int)car.NextStep < 1) return car;
-
-            
 
             int orgDirection = car.Direction;
 
@@ -215,15 +212,11 @@ namespace SlowRacer
                 {
                     cCar InCollCar = HandyTools.IsInCollitionWith(car, cars);
 
-                    if (InCollCar != null )
+                    if (InCollCar != null)
                     {
-
                         if (car.Speed > InCollCar.Speed) car.Speed = InCollCar.Speed - 10;
                         if (car.Speed < ActiveTrack.MinSpeed) car.Speed = ActiveTrack.MinSpeed;
                         if (car.DrivingOnWrongLanes) { car.dtPenalty = DateTime.Now; }
-                        
-
-
                     }
 
                     int OldX = (int)car.X;
@@ -301,7 +294,7 @@ namespace SlowRacer
                     if (CarValues.Speed >= (ActiveTrack.MinSpeed + 10)) CarValues.Speed -= 10;
                 }
             }
-            else { dtKeyS = DateTime.Now.AddMinutes(-1); }           
+            else { dtKeyS = DateTime.Now.AddMinutes(-1); }
 
             if (Keyboard.IsKeyDown(Key.Space))
             {

@@ -82,7 +82,7 @@ namespace SlowRacer.Common
             }
         }
 
-        public bool OncomingTraffic { get; set; }
+        public bool OnWrongLanes { get; set; } = false;
 
         public int Direction { get; set; }
 
@@ -102,9 +102,13 @@ namespace SlowRacer.Common
         {
             //Width = image.ActualWidth;
             // Height = image.ActualHeight;
-            Width = image.Width;
-            Height = image.Height;
-            UIElement = image;
+
+            if (image != null)
+            {
+                Width = image.Width;
+                Height = image.Height;
+                UIElement = image;
+            }
             Uid = Guid.NewGuid();
 
             

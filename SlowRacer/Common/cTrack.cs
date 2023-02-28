@@ -29,6 +29,11 @@ namespace SlowRacer.Common
         public byte[][]? RGBtrackArray { get; set; }
 
 
+
+        public int Width { get; set; }
+        public int Height { get; set; }
+
+
         //public WriteableBitmap? track { get; set; }
         public BitmapImage? background { get; set; }
 

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls.Ribbon.Primitives;
 using System.Windows.Media.Imaging;
 
 namespace SlowRacer.Common
@@ -33,11 +31,8 @@ namespace SlowRacer.Common
             }
         }
 
-
-
         /*internal static WriteableBitmap ReplaceColor2(BitmapImage bitmapImage, System.Windows.Media.Color color1, System.Windows.Media.Color color2)
         {
-           
             WriteableBitmap writeableBitmap = new WriteableBitmap(bitmapImage);
 
             // Copy pixel data to byte array
@@ -62,9 +57,6 @@ namespace SlowRacer.Common
 
         //internal static BitmapImage ReplaceColor(BitmapImage carImage, System.Windows.Media.Color color1, System.Windows.Media.Color color2)
 
-
-
-
         public static WriteableBitmap ReplaceColor(WriteableBitmap bitmap, System.Windows.Media.Color oldColor, System.Windows.Media.Color newColor)
         {
             WriteableBitmap newBitmap = new WriteableBitmap(bitmap);
@@ -82,10 +74,6 @@ namespace SlowRacer.Common
                 // Replace the color of the current pixel if it matches the old color and is not transparent
                 if (color == System.Windows.Media.Color.FromArgb(255, oldColor.R, oldColor.G, oldColor.B) && color.A != 0)
                 {
-
-
-
-
                     pixels[i + 3] = newColor.A;
                     pixels[i + 2] = newColor.R;
                     pixels[i + 1] = newColor.G;
@@ -98,11 +86,6 @@ namespace SlowRacer.Common
 
             return newBitmap;// ConvertWriteableBitmapToBitmapImage(newBitmap);
         }
-
-
-
-
-
 
         public static byte[][] bitmapImage2RGBtrackArray(BitmapImage bitmapImage)
         {
@@ -174,6 +157,9 @@ namespace SlowRacer.Common
 
             track.background = new BitmapImage(new Uri(Path + "\\background.png", UriKind.Absolute));
 
+            track.Width = track.background.PixelWidth;
+            track.Height = track.background.PixelHeight;
+
             track.RGBtrackArray = bitmapImage2RGBtrackArray(new BitmapImage(new Uri(Path + "\\track.png", UriKind.Absolute)));
 
             track.AICarsccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarsccw", "StartFinish"));
@@ -190,38 +176,183 @@ namespace SlowRacer.Common
             track.StartDirectionccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectionccw", "StartFinish"));
             track.StartDirectioncw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectioncw", "StartFinish"));
 
-            track.MaxSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MaxSpeed", "Cars" ));
-            track.MinSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MinSpeed" ,"Cars"));
+            track.MaxSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MaxSpeed", "Cars"));
+            track.MinSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MinSpeed", "Cars"));
 
             return track;
         }
 
         internal static cCar IsInCollitionWith(cCar car, Dictionary<Guid, cCar> cars)
         {
-        
-
-
             foreach (var carItem in cars.Values)
             {
-
                 double distance = 0;
 
                 distance = Math.Abs(carItem.X - car.X) + Math.Abs(carItem.Y - car.Y);
-                if (distance <= car.Width+4 && car.Uid!=carItem.Uid) 
-                
+                if (distance <= car.Width + 4 && car.Uid != carItem.Uid)
+
                 {
-                    if ((car.Direction==6  || car.Direction == 5 || car.Direction == 7) && car.X> carItem.X) return carItem;
+                    if ((car.Direction == 6 || car.Direction == 5 || car.Direction == 7) && car.X > carItem.X) return carItem;
                     if ((car.Direction == 2 || car.Direction == 1 || car.Direction == 3) && car.X < carItem.X) return carItem;
 
                     if ((car.Direction == 0 || car.Direction == 7 || car.Direction == 1) && car.Y > carItem.Y) return carItem;
                     if ((car.Direction == 4 || car.Direction == 5 || car.Direction == 3) && car.Y < carItem.Y) return carItem;
-
                 }
-
-
-
             }
             return null;
+        }
+
+        internal static cCar SwitchLanes(cCar carValues, cTrack activeTrack, Dictionary<Guid, cCar> cars)
+        {
+            // check if current position allow lanesswitsh, if line is having color red in it then not
+            if (activeTrack.GetRGB((int)carValues.X, (int)carValues.Y).red > 5) return carValues;
+
+            cCar dummyCar = new cCar(null);
+
+            double PosX = carValues.X;
+            double PosY = carValues.Y;
+
+            //calculate what direction to look for other lanes
+            switch (carValues.Direction)
+            {
+                case 0:
+                case 4:
+                    dummyCar.SetDirection(6);
+                    break;
+
+                case 1:
+                case 5:
+                    dummyCar.SetDirection(7);
+                    break;
+
+                case 2:
+                case 6:
+                    dummyCar.SetDirection(0);
+                    break;
+
+                case 3:
+                case 7:
+                    dummyCar.SetDirection(5);
+                    break;
+            }
+
+            int X1 = (int)(carValues.X + dummyCar.DirectionX);
+            int Y1 = (int)(carValues.Y + dummyCar.DirectionY);
+            int X2 = (int)(carValues.X - dummyCar.DirectionX);
+            int Y2 = (int)(carValues.Y - dummyCar.DirectionY);
+
+            bool found = false;
+
+            for (int i = 0; i < 150; i++)
+            {
+                X1 += (int)dummyCar.DirectionX;
+                X2 -= (int)dummyCar.DirectionX;
+                Y1 += (int)dummyCar.DirectionY;
+                Y2 -= (int)dummyCar.DirectionY;
+
+                if (X1 < 10) X1 = 10;
+                if (X2 < 10) X2 = 10;
+                if (Y1 < 10) Y1 = 10;
+                if (Y2 < 10) Y2 = 10;
+
+                if (X1 + 10 > activeTrack.Width) X1 = activeTrack.Width - 10;
+                if (X2 + 10 > activeTrack.Width) X2 = activeTrack.Width - 10;
+                if (Y1 + 10 > activeTrack.Height) Y1 = activeTrack.Height - 10;
+                if (Y2 + 10 > activeTrack.Height) Y2 = activeTrack.Height - 10;
+
+                cTrack.cRGB GRB = activeTrack.GetRGB(X1, Y1);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X1; PosY = Y1;
+                    break;
+                }
+
+                GRB = activeTrack.GetRGB(X1 + 1, Y1);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X1 + 1; PosY = Y1;
+                    found = true;
+                    break;
+                }
+
+                GRB = activeTrack.GetRGB(X1 - 1, Y1);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X1 - 1; PosY = Y1;
+                    found = true;
+                    break;
+                }
+
+                GRB = activeTrack.GetRGB(X1, Y1 + 1);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X1; PosY = Y1 + 1;
+                    found = true;
+                    break;
+                }
+
+                GRB = activeTrack.GetRGB(X1, Y1 - 1);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X1; PosY = Y1 - 1;
+                    found = true;
+                    break;
+                }
+
+                // **********************************************************************************************
+
+                GRB = activeTrack.GetRGB(X2, Y2);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X2; PosY = Y2;
+                    found = true;
+                    break;
+                }
+
+                GRB = activeTrack.GetRGB(X2 + 1, Y2);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X2 + 1; PosY = Y2;
+                    found = true;
+                    break;
+                }
+
+                GRB = activeTrack.GetRGB(X2 - 1, Y2);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X2 - 1; PosY = Y2;
+                    found = true;
+                    break;
+                }
+
+                GRB = activeTrack.GetRGB(X2, Y2 + 1);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X2 - 1; PosY = Y2 + 1;
+                    found = true;
+                    break;
+                }
+
+                GRB = activeTrack.GetRGB(X2, Y2 - 1);
+                if (GRB.red > 0 || GRB.green > 0 || GRB.blue > 0)
+                {
+                    PosX = X2 - 1; PosY = Y2 - 1;
+                    found = true;
+                    break;
+                }
+            }
+            if (found)
+            {
+                double OrgPosX = carValues.X; double OrgPosY = carValues.Y;
+                carValues.X = PosX; carValues.Y = PosY;
+                if (IsInCollitionWith(carValues, cars) != null)
+                {
+                    carValues.X = OrgPosX; carValues.Y = OrgPosY;
+                }
+                cTrack.cRGB GRB = activeTrack.GetRGB((int)carValues.X, (int)carValues.Y);
+                carValues.OnWrongLanes = (GRB.blue > 10) ? true : false;
+            }
+            return carValues;
         }
     }
 }

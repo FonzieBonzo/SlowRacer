@@ -4,7 +4,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static SlowRacer.Common.cTrack;
 
 namespace SlowRacer.Common
 {
@@ -136,22 +138,66 @@ namespace SlowRacer.Common
 
             track.RGBtrackArray = bitmapImage2RGBtrackArray(new BitmapImage(new Uri(Path + "\\track.png", UriKind.Absolute)));
 
-            track.AICarsccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarsccw", "StartFinish"));
-            track.AICarscw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarscw", "StartFinish"));
+            track.AICarsccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarsccw", "StartFinish", "12"));
+            track.AICarscw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarscw", "StartFinish", "7"));
 
-            track.Laps = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "DefaultLaps", "StartFinish"));
+            track.Laps = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "DefaultLaps", "StartFinish", "5"));
 
-            track.StartXccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartXccw", "StartFinish"));
-            track.StartXcw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartXcw", "StartFinish"));
+            track.StartXccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartXccw", "StartFinish", "70"));
+            track.StartXcw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartXcw", "StartFinish", "70"));
 
-            track.StartYccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartYccw", "StartFinish"));
-            track.StartYcw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartYcw", "StartFinish"));
+            track.StartYccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartYccw", "StartFinish", "70"));
+            track.StartYcw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartYcw", "StartFinish", "70"));
 
-            track.StartDirectionccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectionccw", "StartFinish"));
-            track.StartDirectioncw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectioncw", "StartFinish"));
+            track.StartDirectionccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectionccw", "StartFinish", "1"));
+            track.StartDirectioncw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectioncw", "StartFinish", "5"));
 
-            track.MaxSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MaxSpeed", "Cars"));
-            track.MinSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MinSpeed", "Cars"));
+            track.MaxSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MaxSpeed", "Cars","70"));
+            track.MinSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MinSpeed", "Cars", "30"));
+
+
+            cTrack.cRGB NewColor = new cTrack.cRGB();
+
+
+
+
+
+
+            NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player1RGB_Red", "Cars", "0"));
+            NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player1RGB_Green", "Cars", "0"));
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player1RGB_Blue", "Cars", "0"));
+
+            NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player2RGB_Red", "Cars", "0"));
+            NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player2RGB_Green", "Cars", "0"));
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player2RGB_Bluen", "Cars", "0"));
+
+            NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player3RGB_Red", "Cars", "0"));
+            NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player3RGB_Green", "Cars", "0"));
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player3RGB_Blue", "Cars", "0"));
+
+            NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player4RGB_Red", "Cars", "0"));
+            NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player4RGB_Green", "Cars", "0"));
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player4RGB_Blue", "Cars", "0"));
+
+            NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player5RGB_Red", "Cars", "0"));
+            NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player5RGB_Green", "Cars", "0"));
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player5RGB_Blue", "Cars", "0"));
+
+            NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player5RGB_Red", "Cars", "0"));
+            NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player5RGB_Green", "Cars", "0"));
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player5RGB_Blue", "Cars", "0"));
+
+            NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarRGBcw_Red", "Cars", "10"));
+            NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarRGBcw_Green", "Cars", "0"));
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarRGBcw_Blue", "Cars", "10"));
+            track.CarRGBcw = Color.FromRgb(NewColor.red, NewColor.green, NewColor.blue);
+
+
+            NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarRGBccw_Red", "Cars", "200"));
+            NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarRGBccw_Green", "Cars", "200"));
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarRGBccw_Blue", "Cars", "0"));
+            track.CarRGBccw = Color.FromRgb(NewColor.red, NewColor.green, NewColor.blue);
+
 
             return track;
         }

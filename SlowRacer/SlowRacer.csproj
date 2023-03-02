@@ -13,6 +13,7 @@
     <None Remove="Images\DefaultTrack\car.png" />
     <None Remove="Images\DefaultTrack\track.png" />
     <None Remove="Images\DefaultTrack\track1600x640.pdn" />
+    <None Remove="Images\DefaultTrack\tractor.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +29,7 @@
     <Resource Include="Images\DefaultTrack\car.png" />
     <Resource Include="Images\DefaultTrack\track.png" />
     <Resource Include="Images\DefaultTrack\track1600x640.pdn" />
+    <Resource Include="Images\DefaultTrack\tractor.png" />
   </ItemGroup>
 
 </Project>

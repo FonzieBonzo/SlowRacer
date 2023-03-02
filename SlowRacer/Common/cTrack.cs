@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace SlowRacer.Common
@@ -19,6 +20,8 @@ namespace SlowRacer.Common
 
         }
 
+        public Color CarRGBccw { get; set; } = Color.FromRgb(200, 0, 0);
+        public Color CarRGBcw { get; set; } = Color.FromRgb(200, 200, 0);
 
         public int MaxSpeed { get; set; }
         public int MinSpeed { get; set; }

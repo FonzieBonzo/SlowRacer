@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,6 +20,7 @@ namespace SlowRacer
     {
         private Random random = new Random(DateTime.Now.Millisecond);
         private Dictionary<System.Guid, cCar> cars = new Dictionary<System.Guid, cCar>();
+        private cPlayer[] Players = new cPlayer[5];
         private cTrack ActiveTrack = new cTrack();
         private DateTime lastfpsTime;
         private DateTime lastRenderTime = DateTime.Now;
@@ -35,13 +37,18 @@ namespace SlowRacer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            for (int i = 0; i < 5; i++)
+            {
+                Players[i] = new cPlayer();
+            }
+            
             if (!Directory.Exists(HandyTools.AppSavePath)) CreateAppSavePathWithDefaults();
-            ActiveTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack");
+            ActiveTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack",ref Players);
 
             TrackImage.Source = ActiveTrack.background;
             TrackImage.Width = ActiveTrack.background.PixelWidth;
             TrackImage.Height = ActiveTrack.background.PixelHeight;
-            bool FirstCar = true;
+            //bool FirstCar = true;
 
             //generate counterclockwise AI cars
             for (int i = 0; i < ActiveTrack.AICarsccw; i++)
@@ -49,9 +56,9 @@ namespace SlowRacer
                 var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png", UriKind.Absolute));
                 WriteableBitmap newBitmap = new WriteableBitmap(carImage);
                 WriteableBitmap newCarImage;
-                if (FirstCar)
+                if (i<5)
                 {
-                    newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Color.FromRgb(200, 0, 0));
+                    newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Players[i].color);
                 }
                 else
                 {
@@ -61,7 +68,7 @@ namespace SlowRacer
                 image.Source = newCarImage;
                 cCar car = new cCar(image);
                 car.Speed = random.Next(ActiveTrack.MinSpeed, ActiveTrack.MaxSpeed + 1);
-                if (FirstCar)
+                if (i<1)
                 {
                     Settings.UidYou = car.Uid;
                     car.typeDriver = TypeDriver.you;
@@ -81,7 +88,7 @@ namespace SlowRacer
 
                 cars.Add(car.Uid, car);
                 canvas.Children.Add(car.UIElement);
-                FirstCar = false;
+               
             }
 
             //generate clockwise AI cars
@@ -185,14 +192,6 @@ namespace SlowRacer
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Red", "Cars", "200");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Green", "Cars", "200");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Blue", "Cars", "0");
-
-
-
-
-
-
-
-
 
 
         }

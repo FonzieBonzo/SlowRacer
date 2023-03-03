@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace SlowRacer.Common
 {
     internal class cTrack
     {
-
         public class cRGB
         {
             public byte red { get; set; }
             public byte green { get; set; }
             public byte blue { get; set; }
-
         }
 
         public Color CarRGBccw { get; set; } = Color.FromRgb(200, 0, 0);
@@ -28,16 +20,11 @@ namespace SlowRacer.Common
 
         public int Laps { get; set; }
 
-
         public byte[][]? RGBtrackArray { get; set; }
-
-
 
         public int Width { get; set; }
         public int Height { get; set; }
 
-
-        //public WriteableBitmap? track { get; set; }
         public BitmapImage? background { get; set; }
 
         public int StartXccw { get; set; }
@@ -52,16 +39,14 @@ namespace SlowRacer.Common
         public int AICarscw { get; set; }
         public int AICarsccw { get; set; }
 
-
         public cRGB GetRGB(int X, int Y)
         {
             cRGB RGB = new cRGB();
             RGB.red = RGBtrackArray[Y][X * 3];
             RGB.green = RGBtrackArray[Y][X * 3 + 1];
-            RGB.blue = RGBtrackArray[Y][X * 3 + 2];            
+            RGB.blue = RGBtrackArray[Y][X * 3 + 2];
 
-            return RGB; 
+            return RGB;
         }
-
     }
 }

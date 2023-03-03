@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Runtime.ConstrainedExecution;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -15,20 +14,18 @@ namespace SlowRacer.Common
 
         public TypeDir typeDir { get; set; }
 
-
         public enum TypeDriver
         {
             you, ai, opponent
         }
 
-        public TypeDriver typeDriver { get; set; }=  TypeDriver.ai;
+        public TypeDriver typeDriver { get; set; } = TypeDriver.ai;
 
         public Guid Uid { get; private set; }
 
-
         public int Lap { get; set; } = 1;
 
-        public bool LapCounted { get; set; } = true;  
+        public bool LapCounted { get; set; } = true;
 
         public double X { get; set; }
         public double Y { get; set; }
@@ -112,8 +109,6 @@ namespace SlowRacer.Common
                 UIElement = image;
             }
             Uid = Guid.NewGuid();
-
-            
         }
     }
 }

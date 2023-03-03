@@ -10,5 +10,13 @@ namespace SlowRacer.Common
     public class cSettings
     {
         public System.Guid UidYou { get; set; }
+
+        public string hostname  { get; set; }
+        public int port { get; set; }
+
+        public bool IsHost { get; set; }
+
+        public string nickname { get; set; }
+
     }
 }

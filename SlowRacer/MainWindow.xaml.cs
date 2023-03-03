@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml.Linq;
+using WebSocketSharp;
 using static SlowRacer.Common.cCar;
 using Image = System.Windows.Controls.Image;
 
@@ -26,14 +28,43 @@ namespace SlowRacer
         private DateTime lastRenderTime = DateTime.Now;
         private int frameCount;
 
-        private DateTime dtKeyW, dtKeyS,  dtKeySpace;
+        private DateTime dtKeyW, dtKeyS,  dtKeySpace, dtKeyRightShift, dtKeyUp, dtKeyDown;
 
         public cSettings Settings = new cSettings();
+        WebSocket WS;
 
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        void WS_OnMessage(object? sender, MessageEventArgs e)
+        {
+            /*string[] data = e.Data.Split('|');
+            if (data.Length == 8 && data[0] != _name && data[1] == _scene)
+            {
+                Partner partner = _partners.Find(x => x.Name == data[0]);
+                if (partner == null)
+                {
+                    partner = new Partner(data[0]);
+                    _partners.Add(partner);
+                }
+
+                partner.Data = data;
+            }*/
+        }
+
+        private void WSUpdate()
+        {
+           
+            
+                WS.Send("TEST");
+           
+
+          
+        }
+
+
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -43,6 +74,28 @@ namespace SlowRacer
             }
             
             if (!Directory.Exists(HandyTools.AppSavePath)) CreateAppSavePathWithDefaults();
+
+            Settings.hostname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "hostname", "Server", "gaming.easyfactuur.com");
+            Settings.port = int.Parse(HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "port", "Server", "8090"));
+            Settings.IsHost = (HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "IsHost", "Server", "0") == "1") ? true : false;
+
+            Settings.nickname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "nickname", "Main", "nobody");
+
+
+
+
+            WS = new WebSocket(@"ws://"+Settings.hostname+":"+ Settings.port.ToString()+ "/benzie");
+            WS.OnMessage += WS_OnMessage;
+            
+            WS.Connect();
+
+            WSUpdate();
+
+
+            // WebSocket.ConnectAsync()
+
+
+
             ActiveTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack",ref Players);
 
             TrackImage.Source = ActiveTrack.background;
@@ -56,7 +109,7 @@ namespace SlowRacer
                 var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png", UriKind.Absolute));
                 WriteableBitmap newBitmap = new WriteableBitmap(carImage);
                 WriteableBitmap newCarImage;
-                if (i<5)
+                if (i<2)
                 {
                     newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Players[i].color);
                 }
@@ -68,11 +121,34 @@ namespace SlowRacer
                 image.Source = newCarImage;
                 cCar car = new cCar(image);
                 car.Speed = random.Next(ActiveTrack.MinSpeed, ActiveTrack.MaxSpeed + 1);
-                if (i<1)
+                if (i<2)
                 {
                     Settings.UidYou = car.Uid;
-                    car.typeDriver = TypeDriver.you;
+                   
                     car.Speed = ActiveTrack.MinSpeed;
+
+                    switch (i)
+                    {
+                        case 0:
+                            car.typeDriver = TypeDriver.p1;
+                            break;
+                        case 1:
+                            car.typeDriver = TypeDriver.p2;
+                            break;
+                        case 2:
+                            car.typeDriver = TypeDriver.p3;
+                            break;
+                        case 3:
+                            car.typeDriver = TypeDriver.p4;
+                            break;
+                        case 4:
+                            car.typeDriver = TypeDriver.p5;
+                            break;
+                    }
+
+                    
+
+
                 }
                 else
                 {
@@ -129,11 +205,12 @@ namespace SlowRacer
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
 
+        
+
         private void CreateAppSavePathWithDefaults()
         {
             Directory.CreateDirectory(HandyTools.AppSavePath);
-            Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks");
-            Directory.CreateDirectory(HandyTools.AppSavePath + "Logs");
+            Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks");            
             Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks\\DefaultTrack");
 
             HandyTools.SaveResourceToFile("Images/DefaultTrack/track1600x640.pdn", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\track1600x640.pdn");
@@ -208,7 +285,7 @@ namespace SlowRacer
                 var NewCar = CalculateNextStep(car, elapsed, cars);
                 cars[NewCar.Uid] = NewCar;
 
-                if (NewCar.typeDriver == TypeDriver.you)
+                if (NewCar.typeDriver == TypeDriver.p1)
                 {
                     TB.Text = "lap:" + car.Lap.ToString() + "/" + ActiveTrack.Laps.ToString();
                 }
@@ -232,7 +309,7 @@ namespace SlowRacer
 
         private cCar CalculateNextStep(cCar car, double elapsed, Dictionary<Guid, cCar> cars)
         {
-            if (DateTime.Now.Ticks - car.dtPenalty.Ticks < 8000000) return car;
+            if (DateTime.Now.Ticks - car.dtPenalty.Ticks < 1200*10000) return car;
             car.NextStep += car.Speed * (elapsed / 1000);
 
             if ((int)car.NextStep < 1) return car;
@@ -309,42 +386,112 @@ namespace SlowRacer
 
         private void CheckKeys()
         {
-            if (cars.ContainsKey(Settings.UidYou) == false) return;
-            var CarValues = cars[Settings.UidYou];
+            //if (cars.ContainsKey(Settings.UidYou) == false) return;
+            cCar CarValues=new cCar(null);
 
             string keys = "";
-            if (Keyboard.IsKeyDown(Key.W))
-            {
-                keys = keys + " W";
-                if (DateTime.Now.Ticks - dtKeyW.Ticks > 4000000)
-                {
-                    dtKeyW = DateTime.Now;
-                    if (HandyTools.IsInCollitionWith(CarValues, cars) == null && CarValues.Speed <= (ActiveTrack.MaxSpeed - 10)) CarValues.Speed += 10;
-                }
-            }
-            else { dtKeyW = DateTime.Now.AddMinutes(-1); }
 
-            if (Keyboard.IsKeyDown(Key.S))
-            {
-                keys = keys + " S";
-                if (DateTime.Now.Ticks - dtKeyS.Ticks > 4000000)
-                {
-                    dtKeyS = DateTime.Now;
-                    if (CarValues.Speed >= (ActiveTrack.MinSpeed + 10)) CarValues.Speed -= 10;
-                }
-            }
-            else { dtKeyS = DateTime.Now.AddMinutes(-1); }
 
-            if (Keyboard.IsKeyDown(Key.Space))
+
+            foreach (KeyValuePair<System.Guid, cCar> item in cars)
             {
-                keys = keys + " Space";
-                if (DateTime.Now.Ticks - dtKeySpace.Ticks > 4000000)
+                if (item.Value.typeDriver == TypeDriver.p1)
                 {
-                    dtKeySpace = DateTime.Now;
-                    CarValues = HandyTools.SwitchLanes(CarValues, ActiveTrack, cars);
+                    CarValues = item.Value;
+                    break;
                 }
             }
-            else { dtKeySpace = DateTime.Now.AddMinutes(-1); }
+
+
+
+            if (CarValues.typeDriver == TypeDriver.p1)
+            {
+                if (Keyboard.IsKeyDown(Key.W))
+                {
+                    keys = keys + " W";
+                    if (DateTime.Now.Ticks - dtKeyW.Ticks > 4000000)
+                    {
+                        dtKeyW = DateTime.Now;
+                        if (HandyTools.IsInCollitionWith(CarValues, cars) == null && CarValues.Speed <= (ActiveTrack.MaxSpeed - 10)) CarValues.Speed += 10;
+                    }
+                }
+                else { dtKeyW = DateTime.Now.AddMinutes(-1); }
+
+                if (Keyboard.IsKeyDown(Key.S))
+                {
+                    keys = keys + " S";
+                    if (DateTime.Now.Ticks - dtKeyS.Ticks > 4000000)
+                    {
+                        dtKeyS = DateTime.Now;
+                        if (CarValues.Speed >= (ActiveTrack.MinSpeed + 10)) CarValues.Speed -= 10;
+                    }
+                }
+                else { dtKeyS = DateTime.Now.AddMinutes(-1); }
+
+                if (Keyboard.IsKeyDown(Key.Space))
+                {
+                    keys = keys + " Space";
+                    if (DateTime.Now.Ticks - dtKeySpace.Ticks > 4000000)
+                    {
+                        dtKeySpace = DateTime.Now;
+                        CarValues = HandyTools.SwitchLanes(CarValues, ActiveTrack, cars);
+                    }
+                }
+                else { dtKeySpace = DateTime.Now.AddMinutes(-1); }
+            }
+
+            foreach (KeyValuePair<System.Guid, cCar> item in cars)
+            {
+                if (item.Value.typeDriver == TypeDriver.p2)
+                {
+                    CarValues = item.Value;
+                    break;
+                }
+            }
+
+            if (CarValues.typeDriver == TypeDriver.p2)
+            {
+
+                if (Keyboard.IsKeyDown(Key.NumPad8))
+                {
+                    keys = keys + " Pad8";
+                    if (DateTime.Now.Ticks - dtKeyUp.Ticks > 4000000)
+                    {
+                        dtKeyUp = DateTime.Now;
+                        if (HandyTools.IsInCollitionWith(CarValues, cars) == null && CarValues.Speed <= (ActiveTrack.MaxSpeed - 10)) CarValues.Speed += 10;
+                    }
+                }
+                else { dtKeyUp = DateTime.Now.AddMinutes(-1); }
+
+                if (Keyboard.IsKeyDown(Key.NumPad5))
+                {
+                    keys = keys + " Pad5";
+                    if (DateTime.Now.Ticks - dtKeyDown.Ticks > 4000000)
+                    {
+                        dtKeyDown = DateTime.Now;
+                        if (CarValues.Speed >= (ActiveTrack.MinSpeed + 10)) CarValues.Speed -= 10;
+                    }
+                }
+                else { dtKeyDown = DateTime.Now.AddMinutes(-1); }
+
+
+
+
+                if (Keyboard.IsKeyDown(Key.Enter))
+                {
+                    keys = keys + " Enter";
+                    if (DateTime.Now.Ticks - dtKeyRightShift.Ticks > 4000000)
+                    {
+                        dtKeyRightShift = DateTime.Now;
+                        CarValues = HandyTools.SwitchLanes(CarValues, ActiveTrack, cars);
+                    }
+                }
+                else { dtKeyRightShift = DateTime.Now.AddMinutes(-1); }
+            }
+
+
+
+
             TB2.Text = keys + " speed:" + CarValues.Speed.ToString();
             cars[Settings.UidYou] = CarValues;
         }

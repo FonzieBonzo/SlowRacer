@@ -16,7 +16,7 @@ namespace SlowRacer.Common
 
         public enum TypeDriver
         {
-            you, ai, opponent
+            p1,p2,p3,p4,p5, ai, opponent
         }
 
         public TypeDriver typeDriver { get; set; } = TypeDriver.ai;

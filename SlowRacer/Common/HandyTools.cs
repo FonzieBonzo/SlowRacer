@@ -108,6 +108,10 @@ namespace SlowRacer.Common
 
         public static Boolean WriteToLog(string Path, string Message, string Subject, Boolean ResetLog = false)
         {
+
+
+            if (Directory.Exists(HandyTools.AppSavePath + "Logs")==false)  Directory.CreateDirectory(HandyTools.AppSavePath + "Logs");
+
             string Filename = Path + "\\" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
             string newline = DateTime.Now.ToString("[HH:mm:ss]") + "[" + Subject + "] \"" + Message + "\"";
             try

@@ -25,6 +25,10 @@
 
             <TextBlock Padding="5" Name="TB" >Laps </TextBlock>
             <TextBlock Padding="5" Name="TB2" ></TextBlock>
+            <TextBlock Padding="5" Name="tbStatus" ></TextBlock>
+            <Button Padding="5" Name="btnStart" Click="btnStart_Click"  >
+                <TextBlock  MinWidth="50" Name="tbBTN"  Text="Start"></TextBlock>
+            </Button>
 
         </StackPanel>
             <Canvas x:Name="canvas" Grid.Column="2" Grid.Row="2" Width="1600" Height="640">

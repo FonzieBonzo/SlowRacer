@@ -1,14 +1,14 @@
 ﻿using SlowRacer.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.IO;
-using System.Numerics;
+using System.Runtime.ConstrainedExecution;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Linq;
 using WebSocketSharp;
 using static SlowRacer.Common.cCar;
 using Image = System.Windows.Controls.Image;
@@ -28,80 +28,26 @@ namespace SlowRacer
         private DateTime lastRenderTime = DateTime.Now;
         private int frameCount;
 
-        private DateTime dtKeyW, dtKeyS,  dtKeySpace, dtKeyRightShift, dtKeyUp, dtKeyDown;
+        private DateTime dtCountDownStart;
+
+        private DateTime dtKeyW, dtKeyS, dtKeySpace, dtKeyRightShift, dtKeyUp, dtKeyDown;
 
         public cSettings Settings = new cSettings();
-        WebSocket WS;
+        private WebSocket WS;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        void WS_OnMessage(object? sender, MessageEventArgs e)
+        private void prepaireRace()
         {
-            /*string[] data = e.Data.Split('|');
-            if (data.Length == 8 && data[0] != _name && data[1] == _scene)
-            {
-                Partner partner = _partners.Find(x => x.Name == data[0]);
-                if (partner == null)
-                {
-                    partner = new Partner(data[0]);
-                    _partners.Add(partner);
-                }
-
-                partner.Data = data;
-            }*/
-        }
-
-        private void WSUpdate()
-        {
-           
-            
-                WS.Send("TEST");
-           
-
-          
-        }
-
-
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                Players[i] = new cPlayer();
-            }
-            
-            if (!Directory.Exists(HandyTools.AppSavePath)) CreateAppSavePathWithDefaults();
-
-            Settings.hostname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "hostname", "Server", "gaming.easyfactuur.com");
-            Settings.port = int.Parse(HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "port", "Server", "8090"));
-            Settings.IsHost = (HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "IsHost", "Server", "0") == "1") ? true : false;
-
-            Settings.nickname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "nickname", "Main", "nobody");
-
-
-
-
-            WS = new WebSocket(@"ws://"+Settings.hostname+":"+ Settings.port.ToString()+ "/benzie");
-            WS.OnMessage += WS_OnMessage;
-            
-            WS.Connect();
-
-            WSUpdate();
-
-
-            // WebSocket.ConnectAsync()
-
-
-
-            ActiveTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack",ref Players);
+            Settings.GameStatus = 1;
+            ActiveTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack", ref Players);
 
             TrackImage.Source = ActiveTrack.background;
             TrackImage.Width = ActiveTrack.background.PixelWidth;
             TrackImage.Height = ActiveTrack.background.PixelHeight;
-            //bool FirstCar = true;
 
             //generate counterclockwise AI cars
             for (int i = 0; i < ActiveTrack.AICarsccw; i++)
@@ -109,7 +55,7 @@ namespace SlowRacer
                 var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png", UriKind.Absolute));
                 WriteableBitmap newBitmap = new WriteableBitmap(carImage);
                 WriteableBitmap newCarImage;
-                if (i<2)
+                if (i < 2)
                 {
                     newCarImage = HandyTools.ReplaceColor(newBitmap, Color.FromRgb(0, 0, 0), Players[i].color);
                 }
@@ -121,10 +67,10 @@ namespace SlowRacer
                 image.Source = newCarImage;
                 cCar car = new cCar(image);
                 car.Speed = random.Next(ActiveTrack.MinSpeed, ActiveTrack.MaxSpeed + 1);
-                if (i<2)
+                if (i < 2)
                 {
                     Settings.UidYou = car.Uid;
-                   
+
                     car.Speed = ActiveTrack.MinSpeed;
 
                     switch (i)
@@ -132,23 +78,23 @@ namespace SlowRacer
                         case 0:
                             car.typeDriver = TypeDriver.p1;
                             break;
+
                         case 1:
                             car.typeDriver = TypeDriver.p2;
                             break;
+
                         case 2:
                             car.typeDriver = TypeDriver.p3;
                             break;
+
                         case 3:
                             car.typeDriver = TypeDriver.p4;
                             break;
+
                         case 4:
                             car.typeDriver = TypeDriver.p5;
                             break;
                     }
-
-                    
-
-
                 }
                 else
                 {
@@ -164,7 +110,6 @@ namespace SlowRacer
 
                 cars.Add(car.Uid, car);
                 canvas.Children.Add(car.UIElement);
-               
             }
 
             //generate clockwise AI cars
@@ -178,6 +123,7 @@ namespace SlowRacer
                 var image = new Image();
                 image.Source = newCarImage;
                 cCar car = new cCar(image);
+                car.Lap = -1000;
                 car.typeDir = TypeDir.cw;
                 car.SetDirection(ActiveTrack.StartDirectioncw);
                 car.X = ActiveTrack.StartXcw;
@@ -191,26 +137,84 @@ namespace SlowRacer
             }
 
             // set all ai cars straggling on the track
-            for (int i = 0; i < 5000; i++)
+            for (int i = 0; i < 9000; i++)
             {
                 foreach (var car in cars.Values)
                 {
                     if (car.typeDriver != TypeDriver.ai) continue;
                     var NewCar = CalculateNextStep(car, 100, cars);
+                    if (NewCar.typeDir==TypeDir.ccw) NewCar.Lap = 0;
+
                     cars[NewCar.Uid] = NewCar;
                 }
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                Players[i] = new cPlayer();
+            }
+
+            if (!Directory.Exists(HandyTools.AppSavePath)) CreateAppSavePathWithDefaults();
+
+            Settings.hostname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "hostname", "Server", "gaming.easyfactuur.com");
+            Settings.port = int.Parse(HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "port", "Server", "8090"));
+            Settings.IsHost = (HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "IsHost", "Server", "0") == "1") ? true : false;
+
+            Settings.nickname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "nickname", "Main", "nobody");
+
+            WS = new WebSocket(@"ws://" + Settings.hostname + ":" + Settings.port.ToString() + "/benzie");
+            WS.OnMessage += WS_OnMessage;
+            WS.Connect();
+            WSUpdate();
+            // WebSocket.ConnectAsync()
 
             lastRenderTime = DateTime.Now;
+
+            prepaireRace();
+
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
 
-        
+        private void WS_OnMessage(object? sender, MessageEventArgs e)
+        {
+            /*string[] data = e.Data.Split('|');
+            if (data.Length == 8 && data[0] != _name && data[1] == _scene)
+            {
+                Partner partner = _partners.Find(x => x.Name == data[0]);
+                if (partner == null)
+                {
+                    partner = new Partner(data[0]);
+                    _partners.Add(partner);
+                }
+
+                partner.Data = data;
+            }*/
+        }
+
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+            if (Settings.GameStatus >= 5) return;
+
+
+            Settings.GameStatus = 2;
+            tbBTN.Text = "Start 3";
+            dtCountDownStart =DateTime.Now;
+
+
+        }
+
+        private void WSUpdate()
+        {
+            WS.Send("TEST");
+        }
 
         private void CreateAppSavePathWithDefaults()
         {
             Directory.CreateDirectory(HandyTools.AppSavePath);
-            Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks");            
+            Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks");
             Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks\\DefaultTrack");
 
             HandyTools.SaveResourceToFile("Images/DefaultTrack/track1600x640.pdn", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\track1600x640.pdn");
@@ -257,7 +261,6 @@ namespace SlowRacer
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player4RGB_Green", "Cars", "100");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player4RGB_Blue", "Cars", "100");
 
-
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player5RGB_Red", "Cars", "100");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player5RGB_Green", "Cars", "0");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player5RGB_Blue", "Cars", "100");
@@ -269,8 +272,6 @@ namespace SlowRacer
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Red", "Cars", "200");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Green", "Cars", "200");
             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Blue", "Cars", "0");
-
-
         }
 
         private void CompositionTarget_Rendering(object? sender, EventArgs e)
@@ -282,7 +283,10 @@ namespace SlowRacer
 
             foreach (var car in cars.Values)
             {
-                var NewCar = CalculateNextStep(car, elapsed, cars);
+                cCar NewCar = car;
+
+                if (Settings.GameStatus >= 5) NewCar = CalculateNextStep(car, elapsed, cars);
+
                 cars[NewCar.Uid] = NewCar;
 
                 if (NewCar.typeDriver == TypeDriver.p1)
@@ -293,6 +297,17 @@ namespace SlowRacer
                 Canvas.SetLeft(NewCar.UIElement, (int)(NewCar.X - (NewCar.Width / 2)));
                 Canvas.SetTop(NewCar.UIElement, (int)(NewCar.Y - (NewCar.Height / 2)));
             }
+
+
+            if (Settings.GameStatus > 1  &&  Settings.GameStatus<5 &&DateTime.Now.Ticks - dtCountDownStart.Ticks > 1000 * 10000)
+            {
+                Settings.GameStatus +=1;
+                tbBTN.Text = "Start "+ (5-Settings.GameStatus).ToString();
+                dtCountDownStart=DateTime.Now;  
+            }
+
+
+
 
             lastRenderTime = DateTime.Now;
 
@@ -309,8 +324,20 @@ namespace SlowRacer
 
         private cCar CalculateNextStep(cCar car, double elapsed, Dictionary<Guid, cCar> cars)
         {
-            if (DateTime.Now.Ticks - car.dtPenalty.Ticks < 1200*10000) return car;
-            car.NextStep += car.Speed * (elapsed / 1000);
+            if (DateTime.Now.Ticks - car.dtPenalty.Ticks < 1200 * 10000) return car;
+
+            if (car.Lap <= ActiveTrack.Laps) { car.NextStep += car.Speed * (elapsed / 1000); } 
+            else {
+
+               
+                if (car.Speed > 0) car.Speed = car.Speed - 1;
+                car.NextStep += car.Speed * (elapsed / 1000);
+
+
+
+
+            }
+
 
             if ((int)car.NextStep < 1) return car;
 
@@ -343,7 +370,7 @@ namespace SlowRacer
 
                     if (OldX != (int)car.X && OldY != (int)car.Y)
                     {
-                        if (car.LapCounted == false && Math.Abs(car.X - ActiveTrack.StartXccw) <= 1 && Math.Abs(car.Y - ActiveTrack.StartYccw) <= 1)
+                        if (  car.LapCounted == false && ((Math.Abs(car.X - ActiveTrack.StartXccw) <= 1 && Math.Abs(car.Y - ActiveTrack.StartYccw) <= 1)) || (Math.Abs(car.X - ActiveTrack.StartXcw) <= 1 && Math.Abs(car.Y - ActiveTrack.StartYcw) <= 1))
 
                         {
                             car.Lap = car.Lap + 1;
@@ -387,11 +414,9 @@ namespace SlowRacer
         private void CheckKeys()
         {
             //if (cars.ContainsKey(Settings.UidYou) == false) return;
-            cCar CarValues=new cCar(null);
+            cCar CarValues = new cCar(null);
 
             string keys = "";
-
-
 
             foreach (KeyValuePair<System.Guid, cCar> item in cars)
             {
@@ -401,8 +426,6 @@ namespace SlowRacer
                     break;
                 }
             }
-
-
 
             if (CarValues.typeDriver == TypeDriver.p1)
             {
@@ -451,7 +474,6 @@ namespace SlowRacer
 
             if (CarValues.typeDriver == TypeDriver.p2)
             {
-
                 if (Keyboard.IsKeyDown(Key.NumPad8))
                 {
                     keys = keys + " Pad8";
@@ -474,9 +496,6 @@ namespace SlowRacer
                 }
                 else { dtKeyDown = DateTime.Now.AddMinutes(-1); }
 
-
-
-
                 if (Keyboard.IsKeyDown(Key.Enter))
                 {
                     keys = keys + " Enter";
@@ -488,9 +507,6 @@ namespace SlowRacer
                 }
                 else { dtKeyRightShift = DateTime.Now.AddMinutes(-1); }
             }
-
-
-
 
             TB2.Text = keys + " speed:" + CarValues.Speed.ToString();
             cars[Settings.UidYou] = CarValues;

@@ -9,6 +9,14 @@ namespace SlowRacer.Common
 {
     public class cSettings
     {
+
+        /*public enum GameStatus
+        {
+            Prepered,  GetReady, Set, Go, Race, finished
+        }*/
+
+        public int  GameStatus { get; set; }         
+
         public System.Guid UidYou { get; set; }
 
         public string hostname  { get; set; }
@@ -17,6 +25,8 @@ namespace SlowRacer.Common
         public bool IsHost { get; set; }
 
         public string nickname { get; set; }
+
+        
 
     }
 }

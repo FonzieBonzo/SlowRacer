@@ -25,7 +25,7 @@ namespace SlowRacer.Common
         public int Width { get; set; }
         public int Height { get; set; }
 
-        public BitmapImage? background { get; set; }
+        public BitmapImage background { get; set; }
 
         public int StartXccw { get; set; }
         public int StartYccw { get; set; }

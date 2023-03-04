@@ -45,6 +45,9 @@ namespace SlowRacer
             Settings.GameStatus = 1;
             ActiveTrack = HandyTools.LoadTrack(HandyTools.AppSavePath + "Tracks\\DefaultTrack", ref Players);
 
+            canvas.Width = ActiveTrack.Width;
+            canvas.Height= ActiveTrack.Height;  
+
             TrackImage.Source = ActiveTrack.background;
             TrackImage.Width = ActiveTrack.background.PixelWidth;
             TrackImage.Height = ActiveTrack.background.PixelHeight;
@@ -327,15 +330,9 @@ namespace SlowRacer
             if (DateTime.Now.Ticks - car.dtPenalty.Ticks < 1200 * 10000) return car;
 
             if (car.Lap <= ActiveTrack.Laps) { car.NextStep += car.Speed * (elapsed / 1000); } 
-            else {
-
-               
+            else {               
                 if (car.Speed > 0) car.Speed = car.Speed - 1;
                 car.NextStep += car.Speed * (elapsed / 1000);
-
-
-
-
             }
 
 
@@ -368,10 +365,9 @@ namespace SlowRacer
                     car.X = car.X + car.DirectionX;
                     car.Y = car.Y + car.DirectionY;
 
-                    if (OldX != (int)car.X && OldY != (int)car.Y)
+                    if (OldX != (int)car.X || OldY != (int)car.Y)
                     {
-                        if (  car.LapCounted == false && ((Math.Abs(car.X - ActiveTrack.StartXccw) <= 1 && Math.Abs(car.Y - ActiveTrack.StartYccw) <= 1)) || (Math.Abs(car.X - ActiveTrack.StartXcw) <= 1 && Math.Abs(car.Y - ActiveTrack.StartYcw) <= 1))
-
+                        if (  car.LapCounted == false && ((Math.Abs(car.X - ActiveTrack.StartXccw) <= 0 && Math.Abs(car.X - ActiveTrack.StartXccw) <= 0 && Math.Abs(car.Y - ActiveTrack.StartYccw) <= 1)) || (Math.Abs(car.X - ActiveTrack.StartXcw) <= 1 && Math.Abs(car.Y - ActiveTrack.StartYcw) <= 1))
                         {
                             car.Lap = car.Lap + 1;
                             car.LapCounted = true;

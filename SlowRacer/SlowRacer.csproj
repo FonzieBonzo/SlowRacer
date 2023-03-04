@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\DefaultTrack2\background.png" />
+    <None Remove="Images\DefaultTrack2\car.png" />
+    <None Remove="Images\DefaultTrack2\horse.png" />
+    <None Remove="Images\DefaultTrack2\track.pdn" />
+    <None Remove="Images\DefaultTrack2\track.png" />
+    <None Remove="Images\DefaultTrack2\TrackSettings.ini" />
     <None Remove="Images\DefaultTrack\background.png" />
     <None Remove="Images\DefaultTrack\car.png" />
     <None Remove="Images\DefaultTrack\track.png" />
@@ -25,6 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\DefaultTrack2\background.png" />
+    <Resource Include="Images\DefaultTrack2\car.png" />
+    <Resource Include="Images\DefaultTrack2\horse.png" />
+    <Resource Include="Images\DefaultTrack2\track.pdn" />
+    <Resource Include="Images\DefaultTrack2\track.png" />
+    <Resource Include="Images\DefaultTrack2\TrackSettings.ini" />
     <Resource Include="Images\DefaultTrack\background.png" />
     <Resource Include="Images\DefaultTrack\car.png" />
     <Resource Include="Images\DefaultTrack\track.png" />

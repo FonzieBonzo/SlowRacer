@@ -208,7 +208,7 @@ namespace SlowRacer.Common
                 double distance = 0;
 
                 distance = Math.Abs(carItem.X - car.X) + Math.Abs(carItem.Y - car.Y);
-                if (distance <= car.Width + 4 && car.Uid != carItem.Uid)
+                if (distance <= car.Width + 4 && car.Uid != carItem.Uid && car.typeDir==carItem.typeDir)
 
                 {
                     if ((car.Direction == 6 || car.Direction == 5 || car.Direction == 7) && car.X > carItem.X) return carItem;
@@ -262,7 +262,7 @@ namespace SlowRacer.Common
 
             bool FoundOtherLanes = false;
 
-            for (int i = 0; i < 150; i++)
+            for (int i = 0; i < 60; i++)
             {
                 X1 += (int)dummyCar.DirectionX;
                 X2 -= (int)dummyCar.DirectionX;
@@ -283,6 +283,7 @@ namespace SlowRacer.Common
                 if (GRB.red >50 || GRB.green >50 || GRB.blue >50)
                 {
                     PosX = X1; PosY = Y1;
+                    FoundOtherLanes = true;
                     break;
                 }
 
@@ -368,8 +369,17 @@ namespace SlowRacer.Common
                 {
                     carValues.X = OrgPosX; carValues.Y = OrgPosY;
                 }
-                cTrack.cRGB GRB = activeTrack.GetRGB((int)carValues.X, (int)carValues.Y);
-                carValues.DrivingOnWrongLanes = (GRB.blue > 10) ? true : false;
+                else
+                {
+                    carValues.typeDir = (carValues.typeDir == cCar.TypeDir.ccw) ? cCar.TypeDir.cw : cCar.TypeDir.ccw;
+                    cTrack.cRGB GRB = activeTrack.GetRGB((int)carValues.X, (int)carValues.Y);
+                    carValues.DrivingOnWrongLanes = (GRB.blue > 10) ? true : false;
+                }
+                
+
+                
+
+                
             }
             return carValues;
         }

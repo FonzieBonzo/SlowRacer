@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
+using System.Reflection;
+using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
@@ -32,8 +35,26 @@ namespace SlowRacer.Common
 
                 File.WriteAllBytes(filePath, buffer);
             }
-        }    
+        }
+
+        public static string[] GetSubdirectories(string path)
+        {
+            string[] directories = Directory.GetDirectories(path);
+
+
+            for (int i = 0; i < directories.Count(); i++)
+            {
+                directories[i] = Path.GetFileName(directories[i]);
+            }
+            
+            
+
+
+            return directories;
+        }
+
        
+
 
         public static WriteableBitmap ReplaceColor(WriteableBitmap bitmap, System.Windows.Media.Color oldColor, System.Windows.Media.Color newColor)
         {
@@ -106,13 +127,13 @@ namespace SlowRacer.Common
             WritePrivateProfileString(Section, Key, Value, FileName);
         }
 
-        public static Boolean WriteToLog(string Path, string Message, string Subject, Boolean ResetLog = false)
+        public static Boolean WriteToLog(string Message, string Subject, Boolean ResetLog = false)
         {
 
 
             if (Directory.Exists(HandyTools.AppSavePath + "Logs")==false)  Directory.CreateDirectory(HandyTools.AppSavePath + "Logs");
 
-            string Filename = Path + "\\" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+            string Filename = HandyTools.AppSavePath + "Logs" + "\\" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
             string newline = DateTime.Now.ToString("[HH:mm:ss]") + "[" + Subject + "] \"" + Message + "\"";
             try
             {

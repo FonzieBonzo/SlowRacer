@@ -92,6 +92,10 @@ namespace SlowRacer.Common
 
         public double NextStep { get; set; } = 0;
 
+
+
+        public DateTime dtPlusLap { get; set; }
+
         public double Width { get; set; }
         public double Height { get; set; }
         public Color Color { get; set; }
@@ -104,6 +108,7 @@ namespace SlowRacer.Common
 
             if (image != null)
             {
+                
                 Width = image.Width;
                 Height = image.Height;
                 UIElement = image;

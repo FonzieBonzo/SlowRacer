@@ -59,15 +59,5 @@ namespace SlowRacer.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] car {
-            get {
-                object obj = ResourceManager.GetObject("car", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

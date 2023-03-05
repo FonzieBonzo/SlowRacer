@@ -34,6 +34,8 @@ namespace SlowRacer.Common
                 stream.Read(buffer, 0, buffer.Length);
 
                 File.WriteAllBytes(filePath, buffer);
+
+                stream.Close();
             }
         }
 

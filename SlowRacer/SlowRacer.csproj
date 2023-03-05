@@ -9,17 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Images\DefaultTrack2\background.png" />
-    <None Remove="Images\DefaultTrack2\car.png" />
-    <None Remove="Images\DefaultTrack2\horse.png" />
-    <None Remove="Images\DefaultTrack2\track.pdn" />
-    <None Remove="Images\DefaultTrack2\track.png" />
-    <None Remove="Images\DefaultTrack2\TrackSettings.ini" />
-    <None Remove="Images\DefaultTrack\background.png" />
-    <None Remove="Images\DefaultTrack\car.png" />
-    <None Remove="Images\DefaultTrack\track.png" />
-    <None Remove="Images\DefaultTrack\track1600x640.pdn" />
-    <None Remove="Images\DefaultTrack\tractor.png" />
+    <None Remove="Tracks\Small Track v1.0\TrackSettings.ini" />
+    <None Remove="Tracks\ZigZag v1.0\background.png" />
+    <None Remove="Tracks\ZigZag v1.0\car.png" />
+    <None Remove="Tracks\ZigZag v1.0\horse.png" />
+    <None Remove="Tracks\ZigZag v1.0\PaintNET.pdn" />
+    <None Remove="Tracks\ZigZag v1.0\track.png" />
+    <None Remove="Tracks\ZigZag v1.0\TrackSettings.ini" />
+    <None Remove="Tracks\Small Track v1.0\background.png" />
+    <None Remove="Tracks\Small Track v1.0\car.png" />
+    <None Remove="Tracks\Small Track v1.0\PaintNET.pdn" />
+    <None Remove="Tracks\Small Track v1.0\track.png" />
+    <None Remove="Tracks\Small Track v1.0\tractor.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,17 +33,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Images\DefaultTrack2\background.png" />
-    <Resource Include="Images\DefaultTrack2\car.png" />
-    <Resource Include="Images\DefaultTrack2\horse.png" />
-    <Resource Include="Images\DefaultTrack2\track.pdn" />
-    <Resource Include="Images\DefaultTrack2\track.png" />
-    <Resource Include="Images\DefaultTrack2\TrackSettings.ini" />
-    <Resource Include="Images\DefaultTrack\background.png" />
-    <Resource Include="Images\DefaultTrack\car.png" />
-    <Resource Include="Images\DefaultTrack\track.png" />
-    <Resource Include="Images\DefaultTrack\track1600x640.pdn" />
-    <Resource Include="Images\DefaultTrack\tractor.png" />
+    <Resource Include="Tracks\Small Track v1.0\TrackSettings.ini" />
+    <Resource Include="Tracks\ZigZag v1.0\background.png" />
+    <Resource Include="Tracks\ZigZag v1.0\car.png" />
+    <Resource Include="Images\horse.png" />
+    <Resource Include="Tracks\ZigZag v1.0\PaintNET.pdn" />
+    <Resource Include="Tracks\ZigZag v1.0\track.png" />
+    <Resource Include="Tracks\ZigZag v1.0\TrackSettings.ini" />
+    <Resource Include="Tracks\Small Track v1.0\background.png" />
+    <Resource Include="Tracks\Small Track v1.0\car.png" />
+    <Resource Include="Tracks\Small Track v1.0\track.png" />
+    <Resource Include="Tracks\Small Track v1.0\PaintNET.pdn" />
+    <Resource Include="Images\tractor.png" />
   </ItemGroup>
 
   <ItemGroup>

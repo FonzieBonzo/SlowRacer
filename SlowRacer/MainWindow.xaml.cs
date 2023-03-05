@@ -1,16 +1,12 @@
 ﻿using SlowRacer.Common;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Linq;
 using WebSocketSharp;
 using static SlowRacer.Common.cCar;
 using Image = System.Windows.Controls.Image;
@@ -51,6 +47,9 @@ namespace SlowRacer
 
             if (!Directory.Exists(HandyTools.AppSavePath)) CreateAppSavePathWithDefaults();
 
+            CheckRecources2File("Small Track v1.0");
+            CheckRecources2File("ZigZag v1.0");
+
             cbTracs.ItemsSource = HandyTools.GetSubdirectories(HandyTools.AppSavePath + "Tracks");
 
             Settings.hostname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "hostname", "Server", "gaming.easyfactuur.com");
@@ -67,7 +66,18 @@ namespace SlowRacer
 
             lastRenderTime = DateTime.Now;
 
-            prepaireRace(cbTracs.SelectedItem.ToString());            
+            prepaireRace(cbTracs.SelectedItem.ToString());
+        }
+
+        private void CheckRecources2File(string TheName)
+        {
+            if (Directory.Exists(HandyTools.AppSavePath + "Tracks\\" + TheName)) return;
+            Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks\\" + TheName);
+            HandyTools.SaveResourceToFile("Tracks/" + TheName + "/PaintNET.pdn", HandyTools.AppSavePath + "Tracks\\" + TheName + "\\PaintNET.pdn");
+            HandyTools.SaveResourceToFile("Tracks/" + TheName + "/background.png", HandyTools.AppSavePath + "Tracks\\" + TheName + "\\background.png");
+            HandyTools.SaveResourceToFile("Tracks/" + TheName + "/track.png", HandyTools.AppSavePath + "Tracks\\" + TheName + "\\track.png");
+            HandyTools.SaveResourceToFile("Tracks/" + TheName + "/car.png", HandyTools.AppSavePath + "Tracks\\" + TheName + "\\car.png");
+            HandyTools.SaveResourceToFile("Tracks/" + TheName + "/TrackSettings.ini", HandyTools.AppSavePath + "Tracks\\" + TheName + "\\TrackSettings.ini");
         }
 
         private void cbTracs_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -104,7 +114,7 @@ namespace SlowRacer
             //generate counterclockwise AI cars
             for (int i = 0; i < ActiveTrack.AICarsccw; i++)
             {
-                var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\" + TheTrack+"\\car.png", UriKind.Absolute));
+                var carImage = new BitmapImage(new Uri(HandyTools.AppSavePath + "Tracks\\" + TheTrack + "\\car.png", UriKind.Absolute));
                 WriteableBitmap newBitmap = new WriteableBitmap(carImage);
                 WriteableBitmap newCarImage;
                 if (i < 2)
@@ -189,17 +199,18 @@ namespace SlowRacer
             }
 
             // set all ai cars straggling on the track
-            for (int i = 0; i < 1500; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 foreach (var car in cars.Values)
                 {
                     if (car.typeDriver != TypeDriver.ai) continue;
-                    var NewCar = CalculateNextStep(car, 100, cars);
+                    var NewCar = CalculateNextStep(car, 300, cars);
                     if (NewCar.typeDir == TypeDir.ccw) NewCar.Lap = 0;
 
                     cars[NewCar.Uid] = NewCar;
                 }
             }
+
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
 
@@ -233,69 +244,67 @@ namespace SlowRacer
             WS.Send("TEST");
         }
 
-        
-
         private void CreateAppSavePathWithDefaults()
         {
             Directory.CreateDirectory(HandyTools.AppSavePath);
             Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks");
-            Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks\\DefaultTrack");
+            /* Directory.CreateDirectory(HandyTools.AppSavePath + "Tracks\\DefaultTrack");
 
-            HandyTools.SaveResourceToFile("Images/DefaultTrack/track1600x640.pdn", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\track1600x640.pdn");
-            HandyTools.SaveResourceToFile("Images/DefaultTrack/background.png", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\background.png");
-            HandyTools.SaveResourceToFile("Images/DefaultTrack/track.png", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\track.png");
-            HandyTools.SaveResourceToFile("Images/DefaultTrack/car.png", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png");
-            HandyTools.SaveResourceToFile("Images/DefaultTrack/tractor.png", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\tractor.png");
+             HandyTools.SaveResourceToFile("Images/DefaultTrack/track1600x640.pdn", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\track1600x640.pdn");
+             HandyTools.SaveResourceToFile("Images/DefaultTrack/background.png", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\background.png");
+             HandyTools.SaveResourceToFile("Images/DefaultTrack/track.png", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\track.png");
+             HandyTools.SaveResourceToFile("Images/DefaultTrack/car.png", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\car.png");
+             HandyTools.SaveResourceToFile("Images/DefaultTrack/tractor.png", HandyTools.AppSavePath + "Tracks\\DefaultTrack\\tractor.png");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Settings.ini", "nickname", "Main", "nobody");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Settings.ini", "nickname", "Main", "nobody");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Settings.ini", "hostname", "Server", "gaming.easyfactuur.com");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Settings.ini", "port", "Server", "8090");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Settings.ini", "hostname", "Server", "gaming.easyfactuur.com");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Settings.ini", "port", "Server", "8090");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartXcw", "StartFinish", "1424");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartYcw", "StartFinish", "431");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartXcw", "StartFinish", "1424");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartYcw", "StartFinish", "431");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "DefaultLaps", "StartFinish", "5");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "DefaultLaps", "StartFinish", "5");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartXccw", "StartFinish", "1459");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartYccw", "StartFinish", "447");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartXccw", "StartFinish", "1459");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartYccw", "StartFinish", "447");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartDirectionccw", "StartFinish", "1");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartDirectioncw", "StartFinish", "5");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartDirectionccw", "StartFinish", "1");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "StartDirectioncw", "StartFinish", "5");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarsccw", "StartFinish", "12");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarscw", "StartFinish", "7");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarsccw", "StartFinish", "12");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarscw", "StartFinish", "7");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MaxSpeed", "Cars", "60");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MinSpeed", "Cars", "30");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MaxSpeed", "Cars", "60");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "MinSpeed", "Cars", "30");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player1RGB_Red", "Cars", "200");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player1RGB_Green", "Cars", "0");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player1RGB_Blue", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player1RGB_Red", "Cars", "200");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player1RGB_Green", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player1RGB_Blue", "Cars", "0");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player2RGB_Red", "Cars", "0");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player2RGB_Green", "Cars", "200");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player2RGB_Blue", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player2RGB_Red", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player2RGB_Green", "Cars", "200");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player2RGB_Blue", "Cars", "0");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player3RGB_Red", "Cars", "0");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player3RGB_Green", "Cars", "0");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player3RGB_Blue", "Cars", "200");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player3RGB_Red", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player3RGB_Green", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player3RGB_Blue", "Cars", "200");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player4RGB_Red", "Cars", "0");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player4RGB_Green", "Cars", "100");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player4RGB_Blue", "Cars", "100");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player4RGB_Red", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player4RGB_Green", "Cars", "100");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player4RGB_Blue", "Cars", "100");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player5RGB_Red", "Cars", "100");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player5RGB_Green", "Cars", "0");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player5RGB_Blue", "Cars", "100");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player5RGB_Red", "Cars", "100");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player5RGB_Green", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "Player5RGB_Blue", "Cars", "100");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBcw_Red", "Cars", "10");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBcw_Green", "Cars", "0");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBcw_Blue", "Cars", "10");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBcw_Red", "Cars", "10");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBcw_Green", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBcw_Blue", "Cars", "10");
 
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Red", "Cars", "200");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Green", "Cars", "200");
-            HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Blue", "Cars", "0");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Red", "Cars", "200");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Green", "Cars", "200");
+             HandyTools.Writeini(HandyTools.AppSavePath + "Tracks\\DefaultTrack\\TrackSettings.ini", "AICarRGBccw_Blue", "Cars", "0");*/
         }
 
         private void CompositionTarget_Rendering(object? sender, EventArgs e)
@@ -382,9 +391,9 @@ namespace SlowRacer
                     car.X = car.X + car.DirectionX;
                     car.Y = car.Y + car.DirectionY;
 
-                    if ( OldX != (int)car.X || OldY != (int)car.Y)
+                    if (OldX != (int)car.X || OldY != (int)car.Y)
                     {
-                        if (DateTime.Now.Ticks - car.dtPlusLap.Ticks > 3000 * 1000 &&  car.LapCounted == false && ((Math.Abs(car.X - ActiveTrack.StartXccw) <= 0 && Math.Abs(car.X - ActiveTrack.StartXccw) <= 0 && Math.Abs(car.Y - ActiveTrack.StartYccw) <= 1) || (Math.Abs(car.X - ActiveTrack.StartXcw) <= 1 && Math.Abs(car.Y - ActiveTrack.StartYcw) <= 1)))
+                        if (DateTime.Now.Ticks - car.dtPlusLap.Ticks > 3000 * 1000 && car.LapCounted == false && ((Math.Abs(car.X - ActiveTrack.StartXccw) <= 0 && Math.Abs(car.X - ActiveTrack.StartXccw) <= 0 && Math.Abs(car.Y - ActiveTrack.StartYccw) <= 1) || (Math.Abs(car.X - ActiveTrack.StartXcw) <= 1 && Math.Abs(car.Y - ActiveTrack.StartYcw) <= 1)))
                         {
                             car.Lap = car.Lap + 1;
                             car.LapCounted = true;
@@ -522,12 +531,11 @@ namespace SlowRacer
                 else { dtKeyRightShift = DateTime.Now.AddMinutes(-1); }
             }
 
-            if (CarValues.Uid== Settings.UidYou)
-            { 
-            
-            TB2.Text = keys + " speed:" + CarValues.Speed.ToString();
-            cars[Settings.UidYou] = CarValues;
-                }
+            if (CarValues.Uid == Settings.UidYou)
+            {
+                TB2.Text = keys + " speed:" + CarValues.Speed.ToString();
+                cars[Settings.UidYou] = CarValues;
+            }
         }
     }
 }

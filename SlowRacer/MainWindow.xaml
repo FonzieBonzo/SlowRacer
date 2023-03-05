@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SlowRacer"
         mc:Ignorable="d"
-        Title="SlowRacer"   MinHeight="340" MinWidth="800" SizeToContent="WidthAndHeight" Loaded="Window_Loaded" d:DesignHeight="618.92" d:DesignWidth="800" >
-    <Grid>    
+        Title="SlowRacer"   MinHeight="340" MinWidth="800" SizeToContent="WidthAndHeight" Loaded="Window_Loaded" d:DesignHeight="618.92" d:DesignWidth="800" Closing="Window_Closing" >
+    <Grid Unloaded="Grid_Unloaded">    
        
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5" />
@@ -30,7 +30,7 @@
                 <TextBlock   MinWidth="50" Name="tbBTN"  Text="Start"></TextBlock>
             </Button>
             <TextBlock Padding="5,5,2,0" >Track:</TextBlock>
-            <ComboBox  Name="cbTracs" MinWidth="150" SelectedIndex="0" SelectionChanged="cbTracs_SelectionChanged" ></ComboBox>
+            <ComboBox  Name="cbTracks" MinWidth="150" SelectedIndex="0" SelectionChanged="cbTracs_SelectionChanged" ></ComboBox>
 
         </StackPanel>
             <Canvas x:Name="canvas" Grid.Column="2" Grid.Row="2" Width="600" Height="540">

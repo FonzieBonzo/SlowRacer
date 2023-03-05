@@ -50,7 +50,7 @@ namespace SlowRacer
             CheckRecources2File("Small Track v1.0");
             CheckRecources2File("ZigZag v1.0");
 
-            cbTracs.ItemsSource = HandyTools.GetSubdirectories(HandyTools.AppSavePath + "Tracks");
+            cbTracks.ItemsSource = HandyTools.GetSubdirectories(HandyTools.AppSavePath + "Tracks");
 
             Settings.hostname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "hostname", "Server", "gaming.easyfactuur.com");
             Settings.port = int.Parse(HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "port", "Server", "8090"));
@@ -65,8 +65,8 @@ namespace SlowRacer
             // WebSocket.ConnectAsync()
 
             lastRenderTime = DateTime.Now;
-
-            prepaireRace(cbTracs.SelectedItem.ToString());
+            cbTracks.SelectedItem = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "ActiveTrack", "main", "none");
+            //prepaireRace(cbTracks.SelectedItem.ToString());
         }
 
         private void CheckRecources2File(string TheName)
@@ -82,8 +82,8 @@ namespace SlowRacer
 
         private void cbTracs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cbTracs.SelectedIndex == -1) return;
-            prepaireRace(cbTracs.SelectedItem.ToString());
+            if (cbTracks.SelectedIndex == -1) return;
+            prepaireRace(cbTracks.SelectedItem.ToString());
         }
 
         private void prepaireRace(String TheTrack)
@@ -131,14 +131,13 @@ namespace SlowRacer
                 car.Speed = random.Next(ActiveTrack.MinSpeed, ActiveTrack.MaxSpeed + 1);
                 if (i < 2)
                 {
-                    Settings.UidYou = car.Uid;
-
                     car.Speed = ActiveTrack.MinSpeed;
 
                     switch (i)
                     {
                         case 0:
                             car.typeDriver = TypeDriver.p1;
+                            Settings.UidYou = car.Uid;
                             break;
 
                         case 1:
@@ -237,6 +236,15 @@ namespace SlowRacer
             Settings.GameStatus = 2;
             tbBTN.Text = "Start 3";
             dtCountDownStart = DateTime.Now;
+        }
+
+        private void Grid_Unloaded(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            HandyTools.Writeini(HandyTools.AppSavePath + "Settings.ini", "ActiveTrack", "main", cbTracks.SelectedItem.ToString());
         }
 
         private void WSUpdate()
@@ -436,23 +444,25 @@ namespace SlowRacer
 
         private void CheckKeys()
         {
-            //if (cars.ContainsKey(Settings.UidYou) == false) return;
             cCar CarValues = new cCar(null);
 
             string keys = "";
+
+            Guid Uidpx = CarValues.Uid;
 
             foreach (KeyValuePair<System.Guid, cCar> item in cars)
             {
                 if (item.Value.typeDriver == TypeDriver.p1)
                 {
                     CarValues = item.Value;
+                    Uidpx = CarValues.Uid;
                     break;
                 }
             }
 
             if (CarValues.typeDriver == TypeDriver.p1)
             {
-                if (Keyboard.IsKeyDown(Key.W))
+                if (Keyboard.IsKeyDown(Key.W) && CarValues.Lap <= ActiveTrack.Laps)
                 {
                     keys = keys + " W";
                     if (DateTime.Now.Ticks - dtKeyW.Ticks > 4000000)
@@ -486,6 +496,8 @@ namespace SlowRacer
                 else { dtKeySpace = DateTime.Now.AddMinutes(-1); }
             }
 
+            if (CarValues.Uid == Settings.UidYou) TB2.Text = keys + " speed:" + CarValues.Speed.ToString();
+
             foreach (KeyValuePair<System.Guid, cCar> item in cars)
             {
                 if (item.Value.typeDriver == TypeDriver.p2)
@@ -497,7 +509,7 @@ namespace SlowRacer
 
             if (CarValues.typeDriver == TypeDriver.p2)
             {
-                if (Keyboard.IsKeyDown(Key.NumPad8))
+                if (Keyboard.IsKeyDown(Key.NumPad8) && CarValues.Lap <= ActiveTrack.Laps)
                 {
                     keys = keys + " Pad8";
                     if (DateTime.Now.Ticks - dtKeyUp.Ticks > 4000000)
@@ -529,12 +541,11 @@ namespace SlowRacer
                     }
                 }
                 else { dtKeyRightShift = DateTime.Now.AddMinutes(-1); }
-            }
 
-            if (CarValues.Uid == Settings.UidYou)
-            {
-                TB2.Text = keys + " speed:" + CarValues.Speed.ToString();
-                cars[Settings.UidYou] = CarValues;
+                /*if (CarValues.Uid == Settings.UidYou && CarValues.Lap<=ActiveTrack.Laps)
+                {
+                    cars[Uidpx] = CarValues;
+                }*/
             }
         }
     }

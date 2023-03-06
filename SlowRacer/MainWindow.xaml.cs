@@ -49,6 +49,8 @@ namespace SlowRacer
 
             CheckRecources2File("Small Track v1.0");
             CheckRecources2File("ZigZag v1.0");
+            CheckRecources2File("I Dare You v1.0");
+            // I Dare You v1.0
 
             cbTracks.ItemsSource = HandyTools.GetSubdirectories(HandyTools.AppSavePath + "Tracks");
 
@@ -382,7 +384,7 @@ namespace SlowRacer
                 loopcount = loopcount + 1;
                 var tryNewXY = ActiveTrack.GetRGB((int)(car.X + car.DirectionX), (int)(car.Y + car.DirectionY));
 
-                if (tryNewXY.red > 50 || tryNewXY.green > 50 || tryNewXY.blue > 50)
+                if ( tryNewXY.green > 50 || tryNewXY.blue > 50)
                 {
                     cCar InCollCar = HandyTools.IsInCollitionWith(car, cars);
 

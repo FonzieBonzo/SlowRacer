@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Tracks\Pitstop v1.0\background.png" />
+    <None Remove="Tracks\Pitstop v1.0\car.png" />
+    <None Remove="Tracks\Pitstop v1.0\PaintNET.pdn" />
+    <None Remove="Tracks\Pitstop v1.0\track.png" />
+    <None Remove="Tracks\Pitstop v1.0\TrackSettings.ini" />
     <None Remove="Tracks\Small Track v1.0\TrackSettings.ini" />
     <None Remove="Tracks\I Dare You v1.0\background.png" />
     <None Remove="Tracks\I Dare You v1.0\car.png" />
@@ -38,6 +43,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Tracks\Pitstop v1.0\background.png" />
+    <Resource Include="Tracks\Pitstop v1.0\car.png" />
+    <Resource Include="Tracks\Pitstop v1.0\PaintNET.pdn" />
+    <Resource Include="Tracks\Pitstop v1.0\track.png" />
+    <Resource Include="Tracks\Pitstop v1.0\TrackSettings.ini" />
     <Resource Include="Tracks\Small Track v1.0\TrackSettings.ini" />
     <Resource Include="Tracks\I Dare You v1.0\background.png" />
     <Resource Include="Tracks\I Dare You v1.0\car.png" />

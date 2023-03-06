@@ -32,6 +32,8 @@
             <TextBlock Padding="5,5,2,0" >Track:</TextBlock>
             <ComboBox  Name="cbTracks" MinWidth="150" SelectedIndex="0" SelectionChanged="cbTracs_SelectionChanged" ></ComboBox>
 
+            <TextBlock Padding="15,5,2,0" >P1 keys: W S Space   /    P2 keys: Num8 Num5 Enter</TextBlock>
+
         </StackPanel>
             <Canvas x:Name="canvas" Grid.Column="2" Grid.Row="2" Width="600" Height="540">
             <Image x:Name="TrackImage"  />

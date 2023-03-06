@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using static SlowRacer.Common.cTrack;
 
 namespace SlowRacer.Common
 {
@@ -43,20 +39,13 @@ namespace SlowRacer.Common
         {
             string[] directories = Directory.GetDirectories(path);
 
-
             for (int i = 0; i < directories.Count(); i++)
             {
                 directories[i] = Path.GetFileName(directories[i]);
             }
-            
-            
-
 
             return directories;
         }
-
-       
-
 
         public static WriteableBitmap ReplaceColor(WriteableBitmap bitmap, System.Windows.Media.Color oldColor, System.Windows.Media.Color newColor)
         {
@@ -131,9 +120,7 @@ namespace SlowRacer.Common
 
         public static Boolean WriteToLog(string Message, string Subject, Boolean ResetLog = false)
         {
-
-
-            if (Directory.Exists(HandyTools.AppSavePath + "Logs")==false)  Directory.CreateDirectory(HandyTools.AppSavePath + "Logs");
+            if (Directory.Exists(HandyTools.AppSavePath + "Logs") == false) Directory.CreateDirectory(HandyTools.AppSavePath + "Logs");
 
             string Filename = HandyTools.AppSavePath + "Logs" + "\\" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
             string newline = DateTime.Now.ToString("[HH:mm:ss]") + "[" + Subject + "] \"" + Message + "\"";
@@ -180,24 +167,24 @@ namespace SlowRacer.Common
             track.StartDirectionccw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectionccw", "StartFinish", "1"));
             track.StartDirectioncw = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "StartDirectioncw", "StartFinish", "5"));
 
-            track.MaxSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MaxSpeed", "Cars","70"));
+            track.MaxSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MaxSpeed", "Cars", "70"));
             track.MinSpeed = int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "MinSpeed", "Cars", "30"));
 
             cTrack.cRGB NewColor = new cTrack.cRGB();
 
             NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player1RGB_Red", "Cars", "200"));
             NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player1RGB_Green", "Cars", "0"));
-            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player1RGB_Blue", "Cars", "0"));            
-            Players[0].color= Color.FromRgb(NewColor.red, NewColor.green, NewColor.blue);
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player1RGB_Blue", "Cars", "0"));
+            Players[0].color = Color.FromRgb(NewColor.red, NewColor.green, NewColor.blue);
 
             NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player2RGB_Red", "Cars", "0"));
             NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player2RGB_Green", "Cars", "200"));
-            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player2RGB_Bluen", "Cars", "0"));            
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player2RGB_Bluen", "Cars", "0"));
             Players[1].color = Color.FromRgb(NewColor.red, NewColor.green, NewColor.blue);
 
             NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player3RGB_Red", "Cars", "0"));
             NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player3RGB_Green", "Cars", "0"));
-            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player3RGB_Blue", "Cars", "200"));            
+            NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player3RGB_Blue", "Cars", "200"));
             Players[2].color = Color.FromRgb(NewColor.red, NewColor.green, NewColor.blue);
 
             NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player4RGB_Red", "Cars", "0"));
@@ -208,7 +195,7 @@ namespace SlowRacer.Common
             NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player5RGB_Red", "Cars", "150"));
             NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player5RGB_Green", "Cars", "50"));
             NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "Player5RGB_Blue", "Cars", "100"));
-            Players[4].color = Color.FromRgb(NewColor.red, NewColor.green, NewColor.blue);           
+            Players[4].color = Color.FromRgb(NewColor.red, NewColor.green, NewColor.blue);
 
             NewColor.red = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarRGBcw_Red", "Cars", "10"));
             NewColor.green = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarRGBcw_Green", "Cars", "0"));
@@ -220,7 +207,6 @@ namespace SlowRacer.Common
             NewColor.blue = (byte)int.Parse(HandyTools.Readini(Path + "\\TrackSettings.ini", "AICarRGBccw_Blue", "Cars", "0"));
             track.CarRGBccw = Color.FromRgb(NewColor.red, NewColor.green, NewColor.blue);
 
-
             return track;
         }
 
@@ -231,7 +217,7 @@ namespace SlowRacer.Common
                 double distance = 0;
 
                 distance = Math.Abs(carItem.X - car.X) + Math.Abs(carItem.Y - car.Y);
-                if (distance <= car.Width + 4 && car.Uid != carItem.Uid && car.typeDir==carItem.typeDir)
+                if (distance <= car.Width + 4 && car.Uid != carItem.Uid && car.typeDir == carItem.typeDir)
 
                 {
                     if ((car.Direction == 6 || car.Direction == 5 || car.Direction == 7) && car.X > carItem.X) return carItem;
@@ -285,6 +271,8 @@ namespace SlowRacer.Common
 
             bool FoundOtherLanes = false;
 
+            cTrack.cRGB GRB = activeTrack.GetRGB((int)carValues.X, (int)carValues.Y);
+
             for (int i = 0; i < 60; i++)
             {
                 X1 += (int)dummyCar.DirectionX;
@@ -302,7 +290,7 @@ namespace SlowRacer.Common
                 if (Y1 + 10 > activeTrack.Height) Y1 = activeTrack.Height - 10;
                 if (Y2 + 10 > activeTrack.Height) Y2 = activeTrack.Height - 10;
 
-                cTrack.cRGB GRB = activeTrack.GetRGB(X1, Y1);
+                GRB = activeTrack.GetRGB(X1, Y1);
                 if (GRB.red > 50) return carValues;
                 if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
                 {
@@ -397,23 +385,16 @@ namespace SlowRacer.Common
             if (FoundOtherLanes)
             {
                 double OrgPosX = carValues.X; double OrgPosY = carValues.Y;
-                var orgDir = carValues.typeDir;
-                carValues.typeDir = (carValues.typeDir == cCar.TypeDir.ccw) ? cCar.TypeDir.cw : cCar.TypeDir.ccw;
-
-
-
 
                 carValues.X = PosX; carValues.Y = PosY;
                 if (IsInCollitionWith(carValues, cars) != null)
                 {
                     carValues.X = OrgPosX; carValues.Y = OrgPosY;
-                    carValues.typeDir = orgDir;
                 }
                 else
                 {
-                    
-                    cTrack.cRGB GRB = activeTrack.GetRGB((int)carValues.X, (int)carValues.Y);
-                    carValues.DrivingOnWrongLanes = (GRB.blue > 10) ? true : false;
+                    carValues.typeDir = (GRB.blue > 50) ? cCar.TypeDir.cw : cCar.TypeDir.ccw;
+                    carValues.DrivingOnWrongLanes = (GRB.blue > 50) ? true : false;
                 }
             }
             return carValues;

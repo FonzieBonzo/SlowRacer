@@ -273,6 +273,9 @@ namespace SlowRacer.Common
 
             cTrack.cRGB GRB = activeTrack.GetRGB((int)carValues.X, (int)carValues.Y);
 
+            
+            bool[] RedlineDetected = new bool[10];
+
             for (int i = 0; i < 60; i++)
             {
                 X1 += (int)dummyCar.DirectionX;
@@ -291,8 +294,8 @@ namespace SlowRacer.Common
                 if (Y2 + 10 > activeTrack.Height) Y2 = activeTrack.Height - 10;
 
                 GRB = activeTrack.GetRGB(X1, Y1);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[0]=true;
+                if (RedlineDetected[0] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X1; PosY = Y1;
                     FoundOtherLanes = true;
@@ -300,8 +303,8 @@ namespace SlowRacer.Common
                 }
 
                 GRB = activeTrack.GetRGB(X1 + 1, Y1);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[1] = true;
+                if (RedlineDetected[1] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X1 + 1; PosY = Y1;
                     FoundOtherLanes = true;
@@ -309,8 +312,8 @@ namespace SlowRacer.Common
                 }
 
                 GRB = activeTrack.GetRGB(X1 - 1, Y1);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[2] = true;
+                if (RedlineDetected[2] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X1 - 1; PosY = Y1;
                     FoundOtherLanes = true;
@@ -318,8 +321,8 @@ namespace SlowRacer.Common
                 }
 
                 GRB = activeTrack.GetRGB(X1, Y1 + 1);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[3] = true;
+                if (RedlineDetected[3] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X1; PosY = Y1 + 1;
                     FoundOtherLanes = true;
@@ -327,8 +330,8 @@ namespace SlowRacer.Common
                 }
 
                 GRB = activeTrack.GetRGB(X1, Y1 - 1);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[4] = true;
+                if (RedlineDetected[4] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X1; PosY = Y1 - 1;
                     FoundOtherLanes = true;
@@ -338,8 +341,8 @@ namespace SlowRacer.Common
                 // **********************************************************************************************
 
                 GRB = activeTrack.GetRGB(X2, Y2);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[5] = true;
+                if (RedlineDetected[5] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X2; PosY = Y2;
                     FoundOtherLanes = true;
@@ -347,8 +350,8 @@ namespace SlowRacer.Common
                 }
 
                 GRB = activeTrack.GetRGB(X2 + 1, Y2);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[6] = true;
+                if (RedlineDetected[6] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X2 + 1; PosY = Y2;
                     FoundOtherLanes = true;
@@ -356,8 +359,8 @@ namespace SlowRacer.Common
                 }
 
                 GRB = activeTrack.GetRGB(X2 - 1, Y2);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[7] = true;
+                if (RedlineDetected[7] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X2 - 1; PosY = Y2;
                     FoundOtherLanes = true;
@@ -365,8 +368,8 @@ namespace SlowRacer.Common
                 }
 
                 GRB = activeTrack.GetRGB(X2, Y2 + 1);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[8] = true;
+                if (RedlineDetected[8] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X2 - 1; PosY = Y2 + 1;
                     FoundOtherLanes = true;
@@ -374,8 +377,8 @@ namespace SlowRacer.Common
                 }
 
                 GRB = activeTrack.GetRGB(X2, Y2 - 1);
-                if (GRB.red > 50) return carValues;
-                if (GRB.red < 50 && (GRB.green > 50 || GRB.blue > 50))
+                if (GRB.red > 50) RedlineDetected[9] = true;
+                if (RedlineDetected[9] == false && (GRB.green > 50 || GRB.blue > 50))
                 {
                     PosX = X2 - 1; PosY = Y2 - 1;
                     FoundOtherLanes = true;

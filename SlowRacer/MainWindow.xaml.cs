@@ -51,6 +51,7 @@ namespace SlowRacer
             CheckRecources2File("ZigZag v1.0");
             CheckRecources2File("I Dare You v1.0");
             CheckRecources2File("Pitstop v1.0");
+            CheckRecources2File("Island v1.0");
 
 
             cbTracks.ItemsSource = HandyTools.GetSubdirectories(HandyTools.AppSavePath + "Tracks");

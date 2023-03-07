@@ -388,10 +388,12 @@ namespace SlowRacer.Common
             if (FoundOtherLanes)
             {
                 double OrgPosX = carValues.X; double OrgPosY = carValues.Y;
+                carValues.typeDir = (carValues.typeDir==cCar.TypeDir.ccw) ? cCar.TypeDir.cw : cCar.TypeDir.ccw;
 
                 carValues.X = PosX; carValues.Y = PosY;
                 if (IsInCollitionWith(carValues, cars) != null)
                 {
+                    carValues.typeDir = (carValues.typeDir == cCar.TypeDir.ccw) ? cCar.TypeDir.cw : cCar.TypeDir.ccw;
                     carValues.X = OrgPosX; carValues.Y = OrgPosY;
                 }
                 else

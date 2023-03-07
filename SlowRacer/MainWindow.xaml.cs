@@ -36,10 +36,7 @@ namespace SlowRacer
         public MainWindow()
         {
             InitializeComponent();
-        }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
             for (int i = 0; i < 5; i++)
             {
                 Players[i] = new cPlayer();
@@ -70,8 +67,9 @@ namespace SlowRacer
 
             lastRenderTime = DateTime.Now;
             cbTracks.SelectedItem = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "ActiveTrack", "main", "none");
-            //prepaireRace(cbTracks.SelectedItem.ToString());
         }
+
+        
 
         private void CheckRecources2File(string TheName)
         {
@@ -412,7 +410,7 @@ namespace SlowRacer
                 if (Keyboard.IsKeyDown(Key.W) && CarValues.Lap <= ActiveTrack.Laps)
                 {
                     keys = keys + " W";
-                    if (DateTime.Now.Ticks - dtKeyW.Ticks > 4000000)
+                    if (DateTime.Now.Ticks - dtKeyW.Ticks > 400*10000)
                     {
                         dtKeyW = DateTime.Now;
                         if (HandyTools.IsInCollitionWith(CarValues, cars) == null && CarValues.Speed <= (ActiveTrack.MaxSpeed - 10)) CarValues.Speed += 10;
@@ -423,7 +421,7 @@ namespace SlowRacer
                 if (Keyboard.IsKeyDown(Key.S))
                 {
                     keys = keys + " S";
-                    if (DateTime.Now.Ticks - dtKeyS.Ticks > 4000000)
+                    if (DateTime.Now.Ticks - dtKeyS.Ticks > 400*10000)
                     {
                         dtKeyS = DateTime.Now;
                         if (CarValues.Speed >= (ActiveTrack.MinSpeed + 10)) CarValues.Speed -= 10;
@@ -434,7 +432,7 @@ namespace SlowRacer
                 if (Keyboard.IsKeyDown(Key.Space))
                 {
                     keys = keys + " Space";
-                    if (DateTime.Now.Ticks - dtKeySpace.Ticks > 4000000)
+                    if (DateTime.Now.Ticks - dtKeySpace.Ticks > 400 * 10000)
                     {
                         dtKeySpace = DateTime.Now;
                         CarValues = HandyTools.SwitchLanes(CarValues, ActiveTrack, cars);
@@ -459,7 +457,7 @@ namespace SlowRacer
                 if (Keyboard.IsKeyDown(Key.NumPad8) && CarValues.Lap <= ActiveTrack.Laps)
                 {
                     keys = keys + " Pad8";
-                    if (DateTime.Now.Ticks - dtKeyUp.Ticks > 4000000)
+                    if (DateTime.Now.Ticks - dtKeyUp.Ticks > 400*10000)
                     {
                         dtKeyUp = DateTime.Now;
                         if (HandyTools.IsInCollitionWith(CarValues, cars) == null && CarValues.Speed <= (ActiveTrack.MaxSpeed - 10)) CarValues.Speed += 10;
@@ -470,7 +468,7 @@ namespace SlowRacer
                 if (Keyboard.IsKeyDown(Key.NumPad5))
                 {
                     keys = keys + " Pad5";
-                    if (DateTime.Now.Ticks - dtKeyDown.Ticks > 4000000)
+                    if (DateTime.Now.Ticks - dtKeyDown.Ticks > 400 * 10000)
                     {
                         dtKeyDown = DateTime.Now;
                         if (CarValues.Speed >= (ActiveTrack.MinSpeed + 10)) CarValues.Speed -= 10;
@@ -481,7 +479,7 @@ namespace SlowRacer
                 if (Keyboard.IsKeyDown(Key.Enter))
                 {
                     keys = keys + " Enter";
-                    if (DateTime.Now.Ticks - dtKeyRightShift.Ticks > 4000000)
+                    if (DateTime.Now.Ticks - dtKeyRightShift.Ticks > 400 * 10000)
                     {
                         dtKeyRightShift = DateTime.Now;
                         CarValues = HandyTools.SwitchLanes(CarValues, ActiveTrack, cars);
@@ -489,10 +487,7 @@ namespace SlowRacer
                 }
                 else { dtKeyRightShift = DateTime.Now.AddMinutes(-1); }
 
-                /*if (CarValues.Uid == Settings.UidYou && CarValues.Lap<=ActiveTrack.Laps)
-                {
-                    cars[Uidpx] = CarValues;
-                }*/
+                
             }
         }
     }

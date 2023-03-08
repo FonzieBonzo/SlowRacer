@@ -101,7 +101,7 @@ namespace SlowRacer.Common
         public Color Color { get; set; }
         public UIElement UIElement { get; private set; }
 
-        public cCar(Image image)
+        public cCar(System.Windows.Controls.Image image)
         {
             //Width = image.ActualWidth;
             // Height = image.ActualHeight;

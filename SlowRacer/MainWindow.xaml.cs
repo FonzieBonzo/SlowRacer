@@ -1,7 +1,11 @@
-﻿using SlowRacer.Common;
+﻿using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
+using SlowRacer.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -26,6 +30,8 @@ namespace SlowRacer
         private DateTime lastRenderTime = DateTime.Now;
         private int frameCount;
 
+        private string OldKeysForGameHost = "";
+
         private DateTime dtCountDownStart;
 
         private DateTime dtKeyW, dtKeyS, dtKeySpace, dtKeyRightShift, dtKeyUp, dtKeyDown;
@@ -33,9 +39,13 @@ namespace SlowRacer
         public cSettings Settings = new cSettings();
         private WebSocket WS;
 
+       
+
         public MainWindow()
         {
             InitializeComponent();
+
+            
 
             for (int i = 0; i < 5; i++)
             {
@@ -49,27 +59,34 @@ namespace SlowRacer
             CheckRecources2File("I Dare You v1.0");
             CheckRecources2File("Pitstop v1.0");
             CheckRecources2File("Island v1.0");
-
+            CheckRecources2File("Highway v1.0");
 
             cbTracks.ItemsSource = HandyTools.GetSubdirectories(HandyTools.AppSavePath + "Tracks");
 
             Settings.hostname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "hostname", "Server", "gaming.easyfactuur.com");
             Settings.port = int.Parse(HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "port", "Server", "8090"));
             Settings.IsHost = (HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "IsHost", "Server", "0") == "1") ? true : false;
+            Settings.OnlineMode = (HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "OnlineMode", "Main", "0") == "0") ? true : false;
+
 
             Settings.nickname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "nickname", "Main", "nobody");
 
-            WS = new WebSocket(@"ws://" + Settings.hostname + ":" + Settings.port.ToString() + "/benzie");
-            WS.OnMessage += WS_OnMessage;
-            WS.Connect();
-            WSUpdate();
+            if (Settings.OnlineMode)
+            {
+
+                WS = new WebSocket(@"ws://" + Settings.hostname + ":" + Settings.port.ToString() + "/benzie");
+                WS.OnMessage += WS_OnMessage;
+                WS.Connect();
+                WSUpdate();
+            }
             // WebSocket.ConnectAsync()
 
             lastRenderTime = DateTime.Now;
             cbTracks.SelectedItem = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "ActiveTrack", "main", "none");
         }
 
-        
+
+       
 
         private void CheckRecources2File(string TheName)
         {
@@ -217,6 +234,11 @@ namespace SlowRacer
 
         private void WS_OnMessage(object? sender, MessageEventArgs e)
         {
+
+            //  tbxx.            .Text= e.Data.ToString();
+
+            //HandyTools.WriteToLog(e.Data.ToString(), "key");       
+
             /*string[] data = e.Data.Split('|');
             if (data.Length == 8 && data[0] != _name && data[1] == _scene)
             {
@@ -235,14 +257,18 @@ namespace SlowRacer
         {
             if (Settings.GameStatus >= 5) return;
 
+            Stream resourceStream = Application.GetResourceStream(new Uri("SoundFX/StartRace.wav", UriKind.RelativeOrAbsolute)).Stream;
+            WaveFileReader reader = new WaveFileReader(resourceStream);
+            WaveOut outputDevice = new WaveOut();
+            outputDevice.Init(reader);
+            // Set the volume (0.0 to 1.0)
+            outputDevice.Volume = 0.08f;
+            outputDevice.Play();
+
             Settings.GameStatus = 2;
             tbBTN.Text = "Start 3";
             dtCountDownStart = DateTime.Now;
-        }
-
-        private void Grid_Unloaded(object sender, RoutedEventArgs e)
-        {
-        }
+        }        
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -252,6 +278,14 @@ namespace SlowRacer
         private void WSUpdate()
         {
             WS.Send("TEST");
+        }
+
+        
+
+        private void SendKeyToGameHost(string newKeysForGameHost)
+        {
+            if (Settings.OnlineMode==false) return;
+            WS.Send(newKeysForGameHost);
         }
 
         private void CreateAppSavePathWithDefaults()
@@ -391,6 +425,8 @@ namespace SlowRacer
         {
             cCar CarValues = new cCar(null);
 
+            string NewKeysForGameHost = "";
+
             string keys = "";
 
             Guid Uidpx = CarValues.Uid;
@@ -409,6 +445,7 @@ namespace SlowRacer
             {
                 if (Keyboard.IsKeyDown(Key.W) && CarValues.Lap <= ActiveTrack.Laps)
                 {
+                    NewKeysForGameHost += "W";
                     keys = keys + " W";
                     if (DateTime.Now.Ticks - dtKeyW.Ticks > 400*10000)
                     {
@@ -420,6 +457,7 @@ namespace SlowRacer
 
                 if (Keyboard.IsKeyDown(Key.S))
                 {
+                    NewKeysForGameHost += "S";
                     keys = keys + " S";
                     if (DateTime.Now.Ticks - dtKeyS.Ticks > 400*10000)
                     {
@@ -431,8 +469,9 @@ namespace SlowRacer
 
                 if (Keyboard.IsKeyDown(Key.Space))
                 {
+                    NewKeysForGameHost += "<>";
                     keys = keys + " Space";
-                    if (DateTime.Now.Ticks - dtKeySpace.Ticks > 400 * 10000)
+                    if (DateTime.Now.Ticks - dtKeySpace.Ticks > 800 * 10000)
                     {
                         dtKeySpace = DateTime.Now;
                         CarValues = HandyTools.SwitchLanes(CarValues, ActiveTrack, cars);
@@ -479,7 +518,7 @@ namespace SlowRacer
                 if (Keyboard.IsKeyDown(Key.Enter))
                 {
                     keys = keys + " Enter";
-                    if (DateTime.Now.Ticks - dtKeyRightShift.Ticks > 400 * 10000)
+                    if (DateTime.Now.Ticks - dtKeyRightShift.Ticks > 800 * 10000)
                     {
                         dtKeyRightShift = DateTime.Now;
                         CarValues = HandyTools.SwitchLanes(CarValues, ActiveTrack, cars);
@@ -487,8 +526,14 @@ namespace SlowRacer
                 }
                 else { dtKeyRightShift = DateTime.Now.AddMinutes(-1); }
 
-                
+                if (NewKeysForGameHost!= OldKeysForGameHost)
+                {
+                    SendKeyToGameHost(NewKeysForGameHost);
+                    OldKeysForGameHost= NewKeysForGameHost;
+                }
             }
         }
+
+        
     }
 }

@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SoundFX\StartRace.wav" />
+    <None Remove="Tracks\Highway v1.0\background.png" />
+    <None Remove="Tracks\Highway v1.0\car.png" />
+    <None Remove="Tracks\Highway v1.0\PaintNET.pdn" />
+    <None Remove="Tracks\Highway v1.0\track.png" />
+    <None Remove="Tracks\Highway v1.0\TrackSettings.ini" />
     <None Remove="Tracks\Island v1.0\background.png" />
     <None Remove="Tracks\Island v1.0\car.png" />
     <None Remove="Tracks\Island v1.0\PaintNET.pdn" />
@@ -43,11 +49,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
     <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="SoundFX\StartRace.wav" />
+    <Resource Include="Tracks\Highway v1.0\background.png" />
+    <Resource Include="Tracks\Highway v1.0\car.png" />
+    <Resource Include="Tracks\Highway v1.0\PaintNET.pdn" />
+    <Resource Include="Tracks\Highway v1.0\track.png" />
+    <Resource Include="Tracks\Highway v1.0\TrackSettings.ini" />
     <Resource Include="Tracks\Island v1.0\background.png" />
     <Resource Include="Tracks\Island v1.0\car.png" />
     <Resource Include="Tracks\Island v1.0\PaintNET.pdn" />

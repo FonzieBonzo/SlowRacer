@@ -17,7 +17,9 @@ namespace SlowRacer.Common
 
         public int  GameStatus { get; set; }         
 
-        public System.Guid UidYou { get; set; }
+        public Guid UidYou { get; set; }
+
+        public bool OnlineMode { get; set; } = false;
 
         public string hostname  { get; set; }
         public int port { get; set; }

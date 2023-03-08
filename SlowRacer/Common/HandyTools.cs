@@ -16,7 +16,7 @@ namespace SlowRacer.Common
         private static extern long WritePrivateProfileString(string Section, string Key, string Value, string FilePath);
 
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
-        public static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
+        public static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);      
 
         public static string ExePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + '\\';
         public static string ExeName = System.AppDomain.CurrentDomain.FriendlyName;

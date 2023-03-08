@@ -9,7 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SoundFX\Alien Egg Sac Open 1.wav" />
+    <None Remove="SoundFX\Carn Horn 1.wav" />
+    <None Remove="SoundFX\DM-CGS-02.wav" />
+    <None Remove="SoundFX\DM-CGS-03.wav" />
+    <None Remove="SoundFX\DM-CGS-18.wav" />
+    <None Remove="SoundFX\DM-CGS-40.wav" />
+    <None Remove="SoundFX\DM-CGS-48.wav" />
+    <None Remove="SoundFX\Plasma Gas Tube Burst 2.wav" />
+    <None Remove="SoundFX\Pounding.wav" />
     <None Remove="SoundFX\StartRace.wav" />
+    <None Remove="SoundFX\Vehicle_Car_Trunk_Close_Impact.wav" />
     <None Remove="Tracks\Highway v1.0\background.png" />
     <None Remove="Tracks\Highway v1.0\car.png" />
     <None Remove="Tracks\Highway v1.0\PaintNET.pdn" />
@@ -55,7 +65,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="SoundFX\Alien Egg Sac Open 1.wav" />
+    <Resource Include="SoundFX\Carn Horn 1.wav" />
+    <Resource Include="SoundFX\DM-CGS-02.wav" />
+    <Resource Include="SoundFX\DM-CGS-03.wav" />
+    <Resource Include="SoundFX\DM-CGS-18.wav" />
+    <Resource Include="SoundFX\DM-CGS-40.wav" />
+    <Resource Include="SoundFX\DM-CGS-48.wav" />
+    <Resource Include="SoundFX\Plasma Gas Tube Burst 2.wav" />
+    <Resource Include="SoundFX\Pounding.wav" />
     <Resource Include="SoundFX\StartRace.wav" />
+    <Resource Include="SoundFX\Vehicle_Car_Trunk_Close_Impact.wav" />
     <Resource Include="Tracks\Highway v1.0\background.png" />
     <Resource Include="Tracks\Highway v1.0\car.png" />
     <Resource Include="Tracks\Highway v1.0\PaintNET.pdn" />

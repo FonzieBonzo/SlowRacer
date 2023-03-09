@@ -1,2 +1,0 @@
-# SlowRacer
-SlowRacer

@@ -1,0 +1,22 @@
+﻿@inherits ComponentBase
+
+<img src="Images/Car.png" class="smoth100ms" style="position:absolute; left:@Left; top:@Top;" />
+
+@code {
+    internal static List<Car> Cars = new();
+
+    internal int Left { get; set; }
+
+    internal int Top { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Cars.Add(this);
+    }
+
+    internal void Update()
+    {
+        StateHasChanged();
+    }
+}

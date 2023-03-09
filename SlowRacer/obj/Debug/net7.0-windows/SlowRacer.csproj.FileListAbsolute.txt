@@ -1,0 +1,6 @@
+C:\Users\theki\Documents\githubSlowRacer\SlowRacer\SlowRacer\obj\Debug\net7.0-windows\SlowRacer.csproj.AssemblyReference.cache
+C:\Users\theki\Documents\githubSlowRacer\SlowRacer\SlowRacer\obj\Debug\net7.0-windows\MainWindow.g.cs
+C:\Users\theki\Documents\githubSlowRacer\SlowRacer\SlowRacer\obj\Debug\net7.0-windows\App.g.cs
+C:\Users\theki\Documents\githubSlowRacer\SlowRacer\SlowRacer\obj\Debug\net7.0-windows\SlowRacer_Content.g.cs
+C:\Users\theki\Documents\githubSlowRacer\SlowRacer\SlowRacer\obj\Debug\net7.0-windows\SlowRacer_MarkupCompile.cache
+C:\Users\theki\Documents\githubSlowRacer\SlowRacer\SlowRacer\obj\Debug\net7.0-windows\SlowRacer_MarkupCompile.lref

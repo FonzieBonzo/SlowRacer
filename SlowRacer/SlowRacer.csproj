@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="SoundFX\Alien Egg Sac Open 1.wav" />
     <None Remove="SoundFX\Carn Horn 1.wav" />
+    <None Remove="SoundFX\Carn Horn 2.wav" />
     <None Remove="SoundFX\DM-CGS-02.wav" />
     <None Remove="SoundFX\DM-CGS-03.wav" />
     <None Remove="SoundFX\DM-CGS-18.wav" />
@@ -67,6 +68,7 @@
   <ItemGroup>
     <Resource Include="SoundFX\Alien Egg Sac Open 1.wav" />
     <Resource Include="SoundFX\Carn Horn 1.wav" />
+    <Resource Include="SoundFX\Carn Horn 2.wav" />
     <Resource Include="SoundFX\DM-CGS-02.wav" />
     <Resource Include="SoundFX\DM-CGS-03.wav" />
     <Resource Include="SoundFX\DM-CGS-18.wav" />

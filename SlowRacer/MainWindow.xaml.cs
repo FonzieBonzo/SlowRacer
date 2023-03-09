@@ -34,16 +34,25 @@ namespace SlowRacer
 
         private DateTime dtCountDownStart;
 
-        private DateTime dtKeyW, dtKeyS, dtKeySpace, dtKeyRightShift, dtKeyUp, dtKeyDown;
+        private DateTime dtKeyE,dtKeyW, dtKeyS, dtKeySpace, dtKeyRightShift, dtKeyUp, dtKeyDown;
 
         public cSettings Settings = new cSettings();
         private WebSocket WS;
 
-       
+        private WaveOut sndHorn1 = new WaveOut();
+        private WaveOut sndHorn2 = new WaveOut();
+        private WaveOut sndCollitionBack = new WaveOut();
+        private WaveOut sndCollitionfrontal = new WaveOut();
+        private WaveOut sndStartRace = new WaveOut();
+        private WaveOut sndFinishRace = new WaveOut();
+
+
 
         public MainWindow()
         {
             InitializeComponent();
+
+            InitSounds();
 
             
 
@@ -85,8 +94,36 @@ namespace SlowRacer
             cbTracks.SelectedItem = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "ActiveTrack", "main", "none");
         }
 
+        private void InitSounds()
+        {            
+            Stream resourceStream;
+            WaveFileReader reader;
+            resourceStream = Application.GetResourceStream(new Uri("SoundFX/StartRace.wav", UriKind.RelativeOrAbsolute)).Stream;
+            reader = new WaveFileReader(resourceStream);
+            sndStartRace.Init(reader);   
 
-       
+
+
+            resourceStream = Application.GetResourceStream(new Uri("SoundFX/Carn Horn 1.wav", UriKind.RelativeOrAbsolute)).Stream;
+            reader = new WaveFileReader(resourceStream);
+            sndHorn1.Init(reader);
+
+            resourceStream = Application.GetResourceStream(new Uri("SoundFX/Carn Horn 2.wav", UriKind.RelativeOrAbsolute)).Stream;
+            reader = new WaveFileReader(resourceStream);
+            sndHorn2.Init(reader);
+
+            resourceStream = Application.GetResourceStream(new Uri("SoundFX/DM-CGS-18.wav", UriKind.RelativeOrAbsolute)).Stream;
+            reader = new WaveFileReader(resourceStream);
+            sndFinishRace.Init(reader);
+
+            resourceStream = Application.GetResourceStream(new Uri("SoundFX/DM-CGS-48.wav", UriKind.RelativeOrAbsolute)).Stream;
+            reader = new WaveFileReader(resourceStream);
+            sndCollitionfrontal.Init(reader);
+
+            resourceStream = Application.GetResourceStream(new Uri("SoundFX/DM-CGS-02.wav", UriKind.RelativeOrAbsolute)).Stream;
+            reader = new WaveFileReader(resourceStream);
+            sndCollitionBack.Init(reader);
+        }
 
         private void CheckRecources2File(string TheName)
         {
@@ -257,13 +294,8 @@ namespace SlowRacer
         {
             if (Settings.GameStatus >= 5) return;
 
-            Stream resourceStream = Application.GetResourceStream(new Uri("SoundFX/StartRace.wav", UriKind.RelativeOrAbsolute)).Stream;
-            WaveFileReader reader = new WaveFileReader(resourceStream);
-            WaveOut outputDevice = new WaveOut();
-            outputDevice.Init(reader);
-            // Set the volume (0.0 to 1.0)
-            outputDevice.Volume = 0.08f;
-            outputDevice.Play();
+            sndStartRace.Volume = 0.08f;
+            sndStartRace.Play();
 
             Settings.GameStatus = 2;
             tbBTN.Text = "Start 3";
@@ -443,6 +475,23 @@ namespace SlowRacer
 
             if (CarValues.typeDriver == TypeDriver.p1)
             {
+                if (Keyboard.IsKeyDown(Key.E))
+                {
+                    NewKeysForGameHost += "E";
+                    keys = keys + " E";
+
+                    if (DateTime.Now.Ticks - dtKeyE.Ticks > 4000 * 10000)
+                    {
+                        dtKeyE = DateTime.Now;
+                       
+                        sndHorn1.Play();
+                        
+                    }
+                }
+                else { dtKeyE = DateTime.Now.AddMinutes(-1); }
+
+
+
                 if (Keyboard.IsKeyDown(Key.W) && CarValues.Lap <= ActiveTrack.Laps)
                 {
                     NewKeysForGameHost += "W";

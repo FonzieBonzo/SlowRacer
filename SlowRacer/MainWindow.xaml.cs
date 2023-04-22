@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -75,7 +76,7 @@ namespace SlowRacer
             Settings.hostname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "hostname", "Server", "gaming.easyfactuur.com");
             Settings.port = int.Parse(HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "port", "Server", "8090"));
             Settings.IsHost = (HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "IsHost", "Server", "0") == "1") ? true : false;
-            Settings.OnlineMode = (HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "OnlineMode", "Main", "0") == "0") ? true : false;
+            Settings.OnlineMode = (HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "OnlineMode", "Main", "0") == "1") ? true : false;
 
 
             Settings.nickname = HandyTools.Readini(HandyTools.AppSavePath + "Settings.ini", "nickname", "Main", "nobody");
@@ -84,7 +85,11 @@ namespace SlowRacer
             {
 
                 WS = new WebSocket(@"ws://" + Settings.hostname + ":" + Settings.port.ToString() + "/benzie");
+               
+                WS.WaitTime = TimeSpan.FromSeconds(5);
+                WS.WaitTime.
                 WS.OnMessage += WS_OnMessage;
+                
                 WS.Connect();
                 WSUpdate();
             }
